@@ -10,7 +10,7 @@ jar = ROOT / 'build' / f'PZ-Server-Architect-Updater-{VERSION}.jar'
 if not jar.is_file():
     raise SystemExit('Run tools/build.py first')
 files = []
-for folder in ('src', 'docs', 'tools', 'integration', 'assets', '.github'):
+for folder in ('src', 'docs', 'tools', 'assets', '.github'):
     for path in (ROOT / folder).rglob('*'):
         if path.is_file() and not path.is_symlink() and '__pycache__' not in path.parts and path.suffix not in ('.pyc', '.pem', '.key'):
             files.append(path)

@@ -93,6 +93,6 @@ RuhrpottZ ist unter https://pzservers.net/server/75212135 gelistet. Keine veralt
 
 ## Updates und Releases
 
-Automatische Prüfung und verifizierter Download beim App-Start, mit sichtbarer Einstellung. Installation erst nach gesichertem Arbeitsstand und ausdrücklicher Installationsaktion. VeliShell-Masterserver um ein getrenntes PZ-Produkt erweitern, bestehende VeliShell-Verträge erhalten. Repositorygebundene Downloads und signierter Masterserver-Vertrag, keine Tokens im Client.
+Automatische Prüfung und verifizierter Download beim App-Start, mit sichtbarer Einstellung. Installation erst nach gesichertem Arbeitsstand und ausdrücklicher Installationsaktion. Updates vollständig über GitHub Releases des festen Repositories: Versionen, Changelogs, native Plattformpakete und SHA-256-Digests. Kein Masterserver, keine VeliShell-Abhängigkeit und keine Tokens im Client. Abfragelimits und unvollständige Prüfungen ausdrücklich anzeigen statt einen falschen aktuellen Stand zu melden.
 
-Die derzeitige Implementierung deckt davon den Java-Updaterbaustein ab. GUI, nativer Konfigurator, Installer und Live-Masterserver bleiben offen. Zielpakete enthalten später eine Java-Laufzeit. Jede Windows-/macOS-/Linux-Architektur muss separat gebaut und gestartet werden, bevor sie als unterstützt gilt.
+Die derzeitige Implementierung deckt davon den Java-Updaterbaustein ab. GUI, nativer Konfigurator, Installer und vollständiger Live-Installationstest bleiben offen. Zielpakete enthalten später eine Java-Laufzeit. Jede Windows-/macOS-/Linux-Architektur muss separat gebaut und gestartet werden, bevor sie als unterstützt gilt.

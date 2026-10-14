@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.*;
 
-/** No automatic redirects: metadata stays on its origin; asset redirects use a fixed CDN allowlist. */
+/** No automatic redirects: metadata stays on the repository-bound GitHub API; asset redirects use a fixed CDN allowlist. */
 public final class HttpsTransport implements UpdateClient.Transport {
     private static final Set<String> ASSET_HOSTS = Set.of("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com");
     private static final ScheduledExecutorService TIMER = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -19,9 +19,11 @@ public final class HttpsTransport implements UpdateClient.Transport {
         URI original = uri;
         for (int hop = 0; hop < 6; hop++) {
             validateRedirect(original, uri, asset);
-            HttpRequest request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(20))
+            HttpRequest.Builder builder = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(20))
                 .header("User-Agent", "PZ-Server-Architect-Updater/" + UpdateClient.UPDATER_VERSION)
-                .header("Accept", asset ? "application/octet-stream" : "application/json").GET().build();
+                .header("Accept", asset ? "application/octet-stream" : "application/vnd.github+json");
+            if (!asset) builder.header("X-GitHub-Api-Version", "2022-11-28");
+            HttpRequest request = builder.GET().build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int status = response.statusCode();
             if (Set.of(301, 302, 303, 307, 308).contains(status)) {
@@ -47,8 +49,10 @@ public final class HttpsTransport implements UpdateClient.Transport {
         if (asset) {
             if (!ASSET_HOSTS.contains(next.getHost())) throw new SecurityException("Unapproved update download host");
             if (next.getHost().equals("github.com") && !next.getRawPath().startsWith("/" + UpdateClient.REPOSITORY + "/releases/download/")) throw new SecurityException("Unapproved GitHub path");
-        } else if (!original.getHost().equals(next.getHost()) || original.getPort() != next.getPort()) {
-            throw new SecurityException("Metadata redirected to a different origin");
+        } else {
+            UpdateClient.requireMetadataUrl(original);
+            UpdateClient.requireMetadataUrl(next);
+            if (!original.equals(next)) throw new SecurityException("Release metadata redirected to a different endpoint");
         }
     }
 }

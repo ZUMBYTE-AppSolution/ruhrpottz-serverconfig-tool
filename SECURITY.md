@@ -1,11 +1,21 @@
 # Sicherheitsgrenzen
 
-Der Updater lädt nur passende stabile Pakete aus dem fest gebundenen PZ-Repository. Die direkte GitHub-Quelle wird über HTTPS angesprochen und verlangt GitHubs Asset-Digest. Ein Hash beweist Integrität, aber keine unabhängige Herausgeberidentität. Die Windows-/macOS-Herausgebersignierung ist hier nicht implementiert.
+## Vertrauensquelle
 
-Ein konfigurierter Masterserver benötigt einen gepinnten Ed25519-Schlüssel. Ungültige, abgelaufene oder produktfremde Manifeste werden nicht durch einen stillen Wechsel zu GitHub umgangen. Schlüssel aus Serverantworten werden nicht als neue Vertrauensanker akzeptiert.
+Der Updater liest ausschließlich das öffentliche GitHub-Repository `ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool`. Es gibt keine konfigurierbare Masterserver-URL, Schlüsselregistrierung, fremde Updatequelle oder VeliShell-Abhängigkeit. Der Client benötigt kein GitHub-Token und lädt keine Serverkonfigurationen, Profile oder Zugangsdaten hoch.
 
-Downloadgröße, Metadatengröße, JSON-Tiefe, Zielpfade und HTTPS-Redirects sind begrenzt. Es wird kein heruntergeladener Shellcode ausgeführt. Die spätere explizite Installationsaktion öffnet das geprüfte Paket lediglich mit dem Betriebssystem-Handler und umgeht keine Schutzmechanismen. Aktuell existieren keine native GUI, Auto-Swap-Installation oder Rollbackimplementierung.
+Nur stabile SemVer-App-Releases mit passendem Paketnamen, Zielsystem und einem von GitHub gelieferten SHA-256-Digest werden akzeptiert. Fehlt die Prüfsumme, gibt es keinen unsicheren Fallback. Ein Hash über HTTPS prüft Integrität, ist aber **keine unabhängige Herausgebersignatur**. Die Sicherheit des Herausgeberkontos und der Release-Buildkette bleibt entscheidend. Betriebssystem-Code-Signing ist nicht implementiert.
 
-Lokale Angreifer mit denselben Benutzerrechten, kompromittierte Herausgeber-/CI-Konten und kompromittierte Signierschlüssel sind nicht vollständig abgedeckt. Metadaten-Replay innerhalb eines noch gültigen Fensters ist nicht durch persistente Highest-Seen-Daten verhindert. Dies ist kein vollständiger TUF-Client.
+## Netzwerk und Dateien
 
-Keine privaten Schlüssel, Tokens, Zugangsdaten oder Serverkonfigurationen in Issues, Logs, Releases oder das Repository schreiben. Verdächtige Pakete nicht starten. Bei fehlender Signatur oder Hash-Abweichung bleibt das Update gesperrt.
+Metadaten sind auf exakt die bekannten GitHub-Releaseseiten dieses Repositories begrenzt. Asset-Weiterleitungen dürfen nur GitHub und explizit erlaubte GitHub-Download-CDNs verwenden. Zeit-, Größen- und JSON-Grenzen sowie eine Obergrenze von fünf Releaseseiten verhindern unbeschränkte Verarbeitung. Bei unvollständigen Daten oder Abfragelimits wird kein falscher „aktuell“-Status ausgegeben.
+
+Downloads erhalten temporäre Namen, Größen-/SHA-256-Prüfung und eine Sperrdatei. Vor dem ausdrücklich ausgelösten Öffnen im OS-Installer wird erneut geprüft. Es werden weder heruntergeladene Shellbefehle ausgeführt noch UAC, Gatekeeper oder andere OS-Schutzmechanismen umgangen.
+
+## Bekannte Grenzen
+
+Noch keine native GUI, kein automatischer Dateiaustausch, kein Rollback und kein vollständiger Live-Installationstest. Rate-Limit-Wartezeiten gelten für die Lebensdauer derselben Clientinstanz, nicht persistent über App-Neustarts. Regelmäßig auftretende Strom-/Prozessabbrüche benötigen später eine ergänzende Bereinigung alter temporärer Dateien.
+
+Lokale Angreifer mit denselben Benutzerrechten, kompromittierte GitHub-/CI-Konten und nach der Prüfung geänderte lokale Dateien sind nicht vollständig abgedeckt. Es gibt keinen kryptografisch signierten eigenen Updatekatalog oder vollständigen TUF-Client.
+
+Keine Tokens, Kennwörter, privaten Schlüssel oder echte Serverdateien in öffentliche Issues, Logs oder Releases schreiben.

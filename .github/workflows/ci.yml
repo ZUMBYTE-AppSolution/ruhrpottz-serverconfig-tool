@@ -26,11 +26,17 @@ jobs:
           java-version: '21'
       - name: Compile and run offline checks
         run: python tools/build.py
+      - name: Check real public GitHub metadata (no download)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          java -jar build/PZ-Server-Architect-Updater-0.2.0.jar --current 0.0.0 --cache ./build/github-probe > build/live-github-check.txt
+          cat build/live-github-check.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: updater-sdk-${{ matrix.os }}
           path: |
             build/*.jar
             build/test-report.txt
+            build/*-check.txt
           if-no-files-found: error
           retention-days: 14

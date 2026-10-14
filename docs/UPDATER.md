@@ -1,45 +1,60 @@
-# Updater und App-Start
+# GitHub-only Updater und App-Start
 
-## Implementiert versus noch einzubinden
+## Stand
 
-Das SDK kompiliert mit Java 21. Die neue Desktop-App existiert noch nicht in diesem Repository. `StartupUpdates` ist der ausführbare, getestete Startcontroller, nicht ein bereits angeschlossener Button in einer fertigen GUI.
+Java-21-Updater-SDK 0.2.0. `StartupUpdates` ist implementiert und offline getestet; die neue Konfigurator-GUI ist noch nicht vorhanden. Kein Masterserver oder anderer Zumbyte-Dienst wird benötigt, geändert oder angesprochen.
 
-Für die spätere JavaFX-App:
+## Einbindung in die spätere JavaFX-App
 
 ```java
 var config = UpdateClient.Config.github(appVersion, appData.resolve("updates"));
 var client = new UpdateClient(config);
 var updater = new StartupUpdates(client, Platform::runLater, controller::showUpdateEvent);
-// Nach stage.show(), nicht im blockierenden UI-Konstruktor:
+// Nach stage.show():
 updater.start(StartupUpdates.Mode.AUTO_DOWNLOAD);
-// Beim tatsächlichen Schließen der Anwendung:
+// Beim endgültigen Schließen:
 // updater.close();
 ```
 
-`Platform` und `controller` gehören zur noch zu implementierenden JavaFX-Oberfläche. Das SDK benötigt JavaFX nicht zum Kompilieren. AUTO_DOWNLOAD ist die für dieses Produkt gewünschte App-Voreinstellung. Endnutzer erhalten eine sichtbare Einstellung für manuell, Benachrichtigen oder automatisch laden. Der Updater wird nicht als Betriebssystem-Autostartdienst installiert.
+`Platform` und `controller` gehören zur noch zu implementierenden Oberfläche. AUTO_DOWNLOAD ist die gewünschte spätere App-Voreinstellung mit sichtbarer Umschaltung auf Benachrichtigen oder manuell. Der SDK-CLI führt ohne Parameter keinen Netzwerkzugriff aus.
 
-## Ablauf
+## Versionserkennung
 
-1. Fenster starten und Updatezustand anzeigen.
-2. Neueste stabile, zu Repository und Produkt gehörende Version prüfen.
-3. Ein passendes Paket für Betriebssystem und CPU auswählen; fehlt es, ausdrücklich melden.
-4. Changelog als Text darstellen, nicht als ungeprüftes HTML.
-5. Bei AUTO_DOWNLOAD begrenzt in den App-Cache laden.
-6. Größe und SHA-256 prüfen; erst dann den fertigen Dateinamen freigeben.
-7. Nach expliziter Installationsaktion und gesichertem Arbeitsstand erneut prüfen und den OS-Installer öffnen.
+Die fest gebundene öffentliche API lautet:
 
-Der letzte Schritt wird nicht unbeaufsichtigt beim Start ausgelöst. Das Öffnen einer DMG oder DEB garantiert noch keine abgeschlossene Installation oder einen Neustart. Native Installationsautomatisierung, Rollback und GUI-Integration sind nicht implementiert. Die App darf nicht behaupten, ein Update sei installiert, nur weil ein Paket heruntergeladen wurde.
+```text
+https://api.github.com/repos/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases?per_page=100
+```
 
-## Quellen
+Bei weiteren Seiten werden ausschließlich passende Seiten-URLs selbst erzeugt, nicht beliebige Link-Adressen übernommen. Höchstens fünf Seiten werden eingelesen; ist die Liste dann noch unvollständig, schlägt die Prüfung ausdrücklich fehl. Kein falscher „aktuell“-Status aus einer abgeschnittenen Liste.
 
-Ohne konfigurierte Masterserver-URL wird das explizit gebundene öffentliche Repository direkt über die GitHub-Releases-API geprüft. Drafts, Prereleases und nicht zu SemVer passende SDK-Tags werden ausgeschlossen. Es werden maximal die 100 zuletzt von dieser API gelieferten Releases betrachtet; innerhalb dieser Auswahl zählt die höchste stabile SemVer-Version.
+Innerhalb der vollständigen, erlaubten Auswahl wird die höchste stabile SemVer-Version mit der installierten Version verglichen. Die Reihenfolge der GitHub-Antwort ist dafür unerheblich. Drafts, Prereleases und nicht passende SDK-Tags bleiben ausgeschlossen. Ein neuer Commit oder ein allein angelegter Git-Tag ist noch kein App-Release.
 
-Fehlt der von GitHub gelieferte SHA-256-Digest, wird kein automatischer Download freigegeben. Integritätsprüfung ist nicht gleichbedeutend mit einer eigenen Herausgebersignatur. Ein kompromittiertes Herausgeberkonto ist außerhalb dieses Schutzumfangs.
+Danach muss genau das erwartete Plattformpaket vorhanden und vollständig hochgeladen sein. Dateiname, GitHub-Repository, Tag, Version, Größe und SHA-256-Digest müssen zusammenpassen. Fehlende Pakete oder Prüfsummen werden nicht durch beliebige ZIP-/Quellcode-Dateien ersetzt.
 
-Mit explizit konfigurierter HTTPS-Mastermanifest-URI und einem fest gepinnten Ed25519-SPKI-Public-Key wird ausschließlich diese Quelle verwendet. Bei ungültiger Signatur, Ablauf oder Zurücknahme gibt es keinen automatischen GitHub-Fallback, der die Freigabe des Masterservers umgehen würde.
+## Ablauf beim Start
 
-## Benutzer- und Datenschutz
+Fenster anzeigen, im separaten Worker prüfen, Changelog bereitstellen, passendes neueres Paket herunterladen und prüfen, dann „Update bereit“ melden. Bereits vorhandene gültige Cachepakete können nach erneuter Prüfung verwendet werden. Installation bleibt eine ausdrückliche Aktion nach gesichertem Arbeitsstand.
 
-Keine Profile, Kennwörter, Konfigurationsdateien oder Hardwarelisten werden gesendet. Die üblichen Verbindungsdaten wie öffentliche IP fallen beim angesprochenen Anbieter an. Fehlermeldungen geben keine vollständigen URLs, Query-Tokens, privaten Dateipfade oder Serverantworten an die UI weiter.
+Der OS-Handler wird erst nach erneuter Paketprüfung geöffnet. Das Öffnen einer MSI/DMG/DEB ist keine Bestätigung einer erfolgreichen Installation. Native Installationssteuerung, App-Neustart und Rollback sind noch nicht umgesetzt.
 
-Download- und Signaturfehler lassen den vorhandenen Arbeitsstand unberührt. Ein beschädigtes bereits fertiges Cachepaket wird abgewiesen; es wird nicht als gültig wiederverwendet. Die spätere UI benötigt dafür eine bewusste Cache-Bereinigungsaktion. Unvollständige `.part`-Dateien werden bei regulärem Fehlerabbruch entfernt; Prozess-/Stromausfall-Bereinigung ist als zusätzliche Startprüfung noch offen.
+## GitHub-Abfragelimits und Offlinebetrieb
+
+Für öffentliche Daten ist kein Token erforderlich. GitHub nennt für nicht authentifizierte API-Aufrufe derzeit 60 Anfragen pro Stunde **je öffentlicher Quell-IP**, gemeinsam mit anderen Programmen hinter dieser IP.
+
+Bei HTTP 429 beziehungsweise einem erkannten primären/sekundären Limit bei 403 wird `Retry-After` oder `X-RateLimit-Reset` berücksichtigt; ohne verwertbare Zeit mindestens 60 Sekunden. Weitere Prüfungen derselben Clientinstanz erzeugen vor diesem Zeitpunkt keine Netzwerkanfrage. Die Wartezeit wird nicht über Prozessneustarts gespeichert. Es gibt keine selbsttätige Endlosschleife und keinen Server-Fallback.
+
+Ein normaler Zugriffsfehler 403 ohne Limit-Indikator wird nicht als Rate-Limit ausgegeben. Offline, Timeout und ungültige Metadaten bleiben Fehlerzustände. Die vorhandene App und deren lokale Arbeit dürfen dadurch nicht blockiert werden. Der Zeitpunkt bezeichnet die früheste erneute Prüfung, keine Zusage einer dann erfolgreichen Anfrage.
+
+CLI: Exitcode 0 bei erfolgreich ermitteltem Zustand, 2 bei Abfragelimit und 1 bei anderen Fehlern. Ohne Argumente nur Hilfe.
+
+## Datenschutz und Sicherheit
+
+Keine Profile, Serverkennwörter oder Konfigurationsdateien werden übertragen. GitHub erhält die üblichen Verbindungsdaten einschließlich öffentlicher IP und des App-User-Agents. Release Notes werden als Text behandelt. Prüfsummen ersetzen keine eigenständige Betriebssystem-Herausgebersignatur.
+
+## Offizielle Quellen
+
+- GitHub Releases API: https://docs.github.com/en/rest/releases/releases
+- GitHub Rate Limits: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
+
+Technischer Abgleich: 14. Oktober 2026. Keine Aussagen über künftig unverändert bleibende Anbieterlimits.

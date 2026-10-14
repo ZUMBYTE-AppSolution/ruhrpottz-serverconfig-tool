@@ -33,7 +33,7 @@ public final class Json {
         if (!(map.get(key) instanceof Boolean b)) throw new IllegalArgumentException("Missing boolean: " + key);
         return b;
     }
-    /** Writer for manifest tooling and tests; the signed payload bytes are never reserialized by the client. */
+    /** JSON writer for test fixtures and local developer tooling. */
     public static String write(Object value) {
         if (value == null) return "null";
         if (value instanceof Boolean || value instanceof BigDecimal || value instanceof Integer || value instanceof Long) return value.toString();

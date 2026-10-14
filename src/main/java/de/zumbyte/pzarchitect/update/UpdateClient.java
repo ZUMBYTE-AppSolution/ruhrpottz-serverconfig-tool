@@ -7,18 +7,18 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.security.*;
-import java.security.spec.X509EncodedKeySpec;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.*;
 
 /** Repository-bound update checker and verified download staging. Does not replace a running app. */
 public final class UpdateClient {
     public static final String PRODUCT = "pz-server-architect";
     public static final String REPOSITORY = "ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool";
-    public static final String UPDATER_VERSION = "0.1.0";
+    public static final String UPDATER_VERSION = "0.2.0";
     public static final URI RELEASES = URI.create("https://api.github.com/repos/" + REPOSITORY + "/releases?per_page=100");
+    public static final int MAX_RELEASE_PAGES = 5;
     public static final long MAX_PACKAGE_BYTES = 2L * 1024 * 1024 * 1024;
     private static final int MAX_METADATA_BYTES = 1_048_576;
 
@@ -36,20 +36,18 @@ public final class UpdateClient {
             return Arrays.stream(values()).filter(t -> t.id.equals(family + "-" + arch)).findFirst().orElseThrow(() -> new IllegalArgumentException("Unsupported system: " + os));
         }
     }
-    public record Config(Version current, Target target, Path cache, URI masterManifest, PublicKey masterKey) {
+    public record Config(Version current, Target target, Path cache) {
         public Config {
             Objects.requireNonNull(current); Objects.requireNonNull(target); Objects.requireNonNull(cache);
-            if ((masterManifest == null) != (masterKey == null)) throw new IllegalArgumentException("Masterserver URI and pinned public key must be configured together");
-            if (masterManifest != null) requireHttps(masterManifest);
         }
         public static Config github(String current, Path cache) {
-            return new Config(Version.parse(current), Target.detect(System.getProperty("os.name"), System.getProperty("os.arch")), cache, null, null);
+            return new Config(Version.parse(current), Target.detect(System.getProperty("os.name"), System.getProperty("os.arch")), cache);
         }
     }
     public enum State { UPDATE_AVAILABLE, UP_TO_DATE, NO_RELEASE, NO_PLATFORM_PACKAGE }
     public record Check(State state, Candidate candidate, String message) {}
     public record Candidate(Version version, Target target, URI url, String fileName, long bytes, String sha256,
-                            String notes, String source, Instant expiresAt) {}
+                            String notes) {}
     public record Downloaded(Candidate candidate, Path file) {}
     public interface Transport { Response open(URI uri, boolean asset) throws Exception; }
     public record Response(int status, Map<String, List<String>> headers, InputStream body) implements AutoCloseable {
@@ -59,15 +57,25 @@ public final class UpdateClient {
     private final Config config;
     private final Transport transport;
     private final Clock clock;
+    private Instant retryAfter = Instant.MIN;
+    /** A temporary GitHub throttle, not an indication that the installed version is current. */
+    public static final class RateLimitException extends IOException {
+        private static final long serialVersionUID = 1L;
+        private final Instant retryAt;
+        RateLimitException(Instant retryAt) {
+            super("GitHub request limit reached; retry after " + retryAt);
+            this.retryAt = retryAt;
+        }
+        public Instant retryAt() { return retryAt; }
+    }
     public UpdateClient(Config config, Transport transport, Clock clock) {
         this.config = Objects.requireNonNull(config); this.transport = Objects.requireNonNull(transport); this.clock = Objects.requireNonNull(clock);
     }
     public UpdateClient(Config config) { this(config, new HttpsTransport(), Clock.systemUTC()); }
 
-    public Check check() throws Exception {
-        if (config.masterManifest() != null) return masterCheck();
-        Object value = Json.parse(readMetadata(RELEASES));
-        if (!(value instanceof List<?> list)) throw new IOException("GitHub returned no release list");
+    public synchronized Check check() throws Exception {
+        if (clock.instant().isBefore(retryAfter)) throw new RateLimitException(retryAfter);
+        List<?> list = readReleases();
         Map<String, Object> best = null;
         Version newest = null;
         for (Object item : list) {
@@ -98,37 +106,9 @@ public final class UpdateClient {
         requireAssetUrl(url, tag, expected);
         Object body = best.get("body");
         String notes = body instanceof String s ? s : "Kein Changelog hinterlegt.";
-        Candidate candidate = new Candidate(newest, config.target(), url, expected, Json.integer(selected, "size"), digest.substring(7).toLowerCase(Locale.ROOT), notes, "GitHub", null);
+        Candidate candidate = new Candidate(newest, config.target(), url, expected, Json.integer(selected, "size"), digest.substring(7).toLowerCase(Locale.ROOT), notes);
         validateCandidate(candidate);
         return new Check(State.UPDATE_AVAILABLE, candidate, "Version " + newest.text() + " verfügbar.");
-    }
-    private Check masterCheck() throws Exception {
-        Map<String, Object> envelope = Json.object(Json.parse(readMetadata(config.masterManifest())));
-        byte[] payload = Base64.getDecoder().decode(Json.string(envelope, "payload"));
-        byte[] signature = Base64.getDecoder().decode(Json.string(envelope, "signature"));
-        Signature verifier = Signature.getInstance("Ed25519");
-        verifier.initVerify(config.masterKey()); verifier.update(payload);
-        if (!verifier.verify(signature)) throw new SecurityException("Masterserver signature does not match the pinned key");
-        Map<String, Object> m = Json.object(Json.parse(utf8(payload)));
-        if (Json.integer(m, "schema") != 1 || !PRODUCT.equals(Json.string(m, "product")) || !REPOSITORY.equals(Json.string(m, "repository"))) throw new SecurityException("Wrong update product or schema");
-        if (!"stable".equals(Json.string(m, "channel"))) throw new SecurityException("Wrong update channel");
-        if (!config.target().id.equals(Json.string(m, "target"))) throw new SecurityException("Wrong update platform");
-        Version minimum = Version.parse(Json.string(m, "minimumUpdater"));
-        if (Version.parse(UPDATER_VERSION).compareTo(minimum) < 0) throw new SecurityException("Updater protocol requires a newer client");
-        Instant issued = Instant.parse(Json.string(m, "issuedAt")), expires = Instant.parse(Json.string(m, "expiresAt")), now = clock.instant();
-        if (issued.isAfter(now.plusSeconds(300)) || !expires.isAfter(now) || !expires.isAfter(issued) || expires.isAfter(issued.plus(Duration.ofDays(7)))) throw new SecurityException("Expired or invalid update validity window");
-        if (!Json.bool(m, "available")) return new Check(State.NO_RELEASE, null, "Masterserver hat derzeit kein freigegebenes Paket.");
-        Version version = Version.parse(Json.string(m, "version"));
-        if (version.pre() != null) throw new SecurityException("Prerelease on stable channel");
-        if (version.compareTo(config.current()) <= 0) return new Check(State.UP_TO_DATE, null, "Keine neuere freigegebene Version.");
-        Map<String, Object> a = Json.object(m.get("artifact"));
-        String name = Json.string(a, "name"), tag = Json.string(m, "tag");
-        if (!Version.parse(tag).text().equals(version.text())) throw new SecurityException("Release tag mismatch");
-        URI url = URI.create(Json.string(a, "url"));
-        requireAssetUrl(url, tag, name);
-        Candidate candidate = new Candidate(version, config.target(), url, name, Json.integer(a, "size"), Json.string(a, "sha256"), Json.string(m, "notes"), "Masterserver", expires);
-        validateCandidate(candidate);
-        return new Check(State.UPDATE_AVAILABLE, candidate, "Version " + version.text() + " vom Masterserver freigegeben.");
     }
     public Downloaded download(Candidate candidate, LongConsumer progress) throws Exception {
         validateCandidate(candidate);
@@ -196,7 +176,6 @@ public final class UpdateClient {
         if (!assetName(c.version(), c.target()).equals(c.fileName()) || !c.fileName().matches("[A-Za-z0-9._+-]{1,200}")) throw new SecurityException("Invalid package name");
         if (c.bytes() <= 0 || c.bytes() > MAX_PACKAGE_BYTES || !c.sha256().matches("[0-9a-fA-F]{64}")) throw new SecurityException("Invalid package checksum/size");
         if (c.notes().length() > 131_072) throw new SecurityException("Changelog too large");
-        if (c.expiresAt() != null && !c.expiresAt().isAfter(clock.instant())) throw new SecurityException("Update approval expired; check again");
         requireHttps(c.url());
         String prefix = "https://github.com/" + REPOSITORY + "/releases/download/";
         if (!c.url().toString().startsWith(prefix)) throw new SecurityException("Unapproved download repository");
@@ -213,24 +192,62 @@ public final class UpdateClient {
         requireHttps(url);
         if (!url.toString().equals("https://github.com/" + REPOSITORY + "/releases/download/" + tag + "/" + file)) throw new SecurityException("Unexpected release asset URL");
     }
-    private String readMetadata(URI uri) throws Exception {
-        try (Response response = transport.open(uri, false)) {
-            if (response.status() != 200) throw httpError(response);
-            byte[] bytes = response.body().readNBytes(MAX_METADATA_BYTES + 1);
-            if (bytes.length > MAX_METADATA_BYTES) throw new IOException("Metadata exceeds size limit");
-            return utf8(bytes);
+    static URI releasePage(int page) {
+        if (page < 1 || page > MAX_RELEASE_PAGES) throw new IllegalArgumentException("Invalid release page");
+        return page == 1 ? RELEASES : URI.create(RELEASES + "&page=" + page);
+    }
+    static void requireMetadataUrl(URI uri) {
+        requireHttps(uri);
+        for (int page = 1; page <= MAX_RELEASE_PAGES; page++) {
+            if (uri.equals(releasePage(page))) return;
         }
+        throw new SecurityException("Only this repository's GitHub release API is allowed");
+    }
+    private List<Object> readReleases() throws Exception {
+        List<Object> releases = new ArrayList<>();
+        for (int page = 1; page <= MAX_RELEASE_PAGES; page++) {
+            try (Response response = transport.open(releasePage(page), false)) {
+                if (response.status() != 200) throw httpError(response);
+                byte[] bytes = response.body().readNBytes(MAX_METADATA_BYTES + 1);
+                if (bytes.length > MAX_METADATA_BYTES) throw new IOException("Metadata exceeds size limit");
+                Object parsed = Json.parse(utf8(bytes));
+                if (!(parsed instanceof List<?> values) || values.size() > 100) throw new IOException("Invalid GitHub release page");
+                releases.addAll(values);
+                // Do not follow arbitrary Link URLs: construct the next repository-bound page ourselves.
+                boolean hasNext = response.headers().entrySet().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase("Link"))
+                    .flatMap(e -> e.getValue().stream())
+                    .anyMatch(value -> java.util.regex.Pattern.compile("(?:^|;)\\s*rel\\s*=\\s*\"next\"(?:\\s*[,;]|\\s*$)").matcher(value).find());
+                if (!hasNext) return releases;
+                if (page == MAX_RELEASE_PAGES) throw new IOException("Release scan limit reached; version status is unknown");
+            }
+        }
+        throw new IOException("Release scan incomplete");
     }
     static String utf8(byte[] bytes) throws CharacterCodingException {
         return StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString();
     }
-    private static IOException httpError(Response response) {
-        return new IOException("Update source returned HTTP " + response.status() + (response.status() == 403 || response.status() == 429 ? "; rate limit or access restriction, try later" : ""));
+    private IOException httpError(Response response) {
+        int status = response.status();
+        String wait = header(response, "Retry-After"), remaining = header(response, "X-RateLimit-Remaining");
+        if (status == 429 || (status == 403 && ("0".equals(remaining) || wait != null))) {
+            Instant now = clock.instant(), retry = now.plusSeconds(60);
+            try {
+                if (wait != null) {
+                    retry = wait.matches("[0-9]{1,9}") ? now.plusSeconds(Long.parseLong(wait))
+                        : ZonedDateTime.parse(wait, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant();
+                } else if ("0".equals(remaining)) {
+                    String reset = header(response, "X-RateLimit-Reset");
+                    if (reset != null && reset.matches("[0-9]{1,12}")) retry = Instant.ofEpochSecond(Long.parseLong(reset));
+                }
+            } catch (IllegalArgumentException | DateTimeException ignored) { retry = now.plusSeconds(60); }
+            if (!retry.isAfter(now)) retry = now.plusSeconds(60);
+            synchronized (this) { retryAfter = retry; }
+            return new RateLimitException(retry);
+        }
+        return new IOException("Update source returned HTTP " + status);
     }
     static String header(Response r, String name) {
         return r.headers().entrySet().stream().filter(e -> e.getKey().equalsIgnoreCase(name)).flatMap(e -> e.getValue().stream()).findFirst().orElse(null);
-    }
-    public static PublicKey readPinnedKey(String base64Spki) throws GeneralSecurityException {
-        return KeyFactory.getInstance("Ed25519").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(base64Spki)));
     }
 }

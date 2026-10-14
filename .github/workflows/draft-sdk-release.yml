@@ -27,4 +27,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           COMMIT: ${{ github.sha }}
         run: |
-          gh release create sdk-v0.1.0 --target "$COMMIT" --draft --prerelease --title "Updater SDK 0.1.0 (Entwicklungsstand, keine Desktop-App)" --notes-file docs/SDK-RELEASE.md build/PZ-Server-Architect-Updater-0.1.0.jar build/PZ-Server-Architect-Update-SDK-0.1.0.zip build/PZ-Server-Architect-Update-SDK-0.1.0.zip.sha256 build/test-report.txt
+          gh release create sdk-v0.2.0 --target "$COMMIT" --draft --prerelease --title "Updater SDK 0.2.0 (Entwicklungsstand, keine Desktop-App)" --notes-file docs/SDK-RELEASE.md build/PZ-Server-Architect-Updater-0.2.0.jar build/PZ-Server-Architect-Update-SDK-0.2.0.zip build/PZ-Server-Architect-Update-SDK-0.2.0.zip.sha256 build/test-report.txt

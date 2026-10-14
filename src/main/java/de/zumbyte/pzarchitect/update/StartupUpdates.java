@@ -51,7 +51,10 @@ public final class StartupUpdates implements AutoCloseable {
         } catch (Exception e) {
             if (e instanceof InterruptedException || e instanceof java.io.InterruptedIOException) Thread.currentThread().interrupt();
             // Do not send exception text, URLs, tokens or local paths to the UI or telemetry.
-            send(new Event(Phase.FAILED, "Updateprüfung oder Download fehlgeschlagen. Die vorhandene App bleibt nutzbar.", 0, 0, null, null));
+            String message = e instanceof UpdateClient.RateLimitException rate
+                ? "GitHub begrenzt die Abfragen. Erneute Prüfung ab " + rate.retryAt() + ". Die vorhandene App bleibt nutzbar."
+                : "Updateprüfung oder Download fehlgeschlagen. Die vorhandene App bleibt nutzbar.";
+            send(new Event(Phase.FAILED, message, 0, 0, null, null));
         }
     }
     private void send(Event event) {

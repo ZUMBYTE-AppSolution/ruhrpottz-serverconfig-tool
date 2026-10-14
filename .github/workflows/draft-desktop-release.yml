@@ -1,0 +1,56 @@
+name: Draft desktop preview
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  packages:
+    uses: ./.github/workflows/ci.yml
+  draft:
+    needs: packages
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: desktop-*
+          path: artifacts
+      - name: Prepare release assets
+        shell: python
+        run: |
+          from pathlib import Path
+          import hashlib
+          import shutil
+          out = Path('release-files')
+          out.mkdir()
+          for file in Path('artifacts').rglob('*'):
+              if file.is_file() and (file.name.endswith(('.msi', '.dmg', '.deb', '.tar.gz', '.zip', '.sha256'))):
+                  target = out / file.name
+                  if target.exists():
+                      raise RuntimeError('Duplicate asset name: ' + file.name)
+                  shutil.copy2(file, target)
+          packages = [p for p in out.iterdir() if not p.name.endswith('.sha256')]
+          if not packages:
+              raise RuntimeError('No native packages were produced')
+          for package in packages:
+              sidecar = package.with_name(package.name + '.sha256')
+              expected, name = sidecar.read_text(encoding='ascii').strip().split('  ', 1)
+              digest = hashlib.sha256()
+              with package.open('rb') as stream:
+                  for block in iter(lambda: stream.read(1048576), b''):
+                      digest.update(block)
+              if name != package.name or digest.hexdigest() != expected:
+                  raise RuntimeError('Release checksum mismatch: ' + package.name)
+      - name: Create draft only, never publish as stable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          gh release create v0.3.0 --target "$COMMIT" --draft --prerelease --title "PZ Server Architect 0.3.0 Preview" --notes-file docs/PREVIEW-RELEASE.md release-files/*

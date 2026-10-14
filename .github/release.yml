@@ -1,0 +1,12 @@
+changelog:
+  exclude:
+    labels: [skip-changelog]
+  categories:
+    - title: Neue Funktionen
+      labels: [enhancement, feature]
+    - title: Fehlerkorrekturen
+      labels: [bug, fix]
+    - title: Sicherheit und Updates
+      labels: [security, updater]
+    - title: Weitere Änderungen
+      labels: ['*']

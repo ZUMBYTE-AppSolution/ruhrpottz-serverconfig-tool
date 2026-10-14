@@ -1,0 +1,11 @@
+/build/
+*.class
+*.log
+*.part
+*.pem
+*.key
+.env
+.env.*
+__pycache__/
+.DS_Store
+Thumbs.db

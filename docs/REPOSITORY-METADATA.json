@@ -1,0 +1,9 @@
+{
+  "repository": "ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool",
+  "description": "Allgemeiner Project-Zomboid-Server- und Sandbox-Konfigurator mit Desktop-App, Werte-Hilfen, Profilen, Quick Start und GitHub-Updates. Von Zumbyte - Appsolution.",
+  "homepage": "https://www.zumbyte.de/",
+  "branch": "feat/desktop-preview-0.3.0",
+  "baseCommit": "6b1df5f7f25e49b3a56afd7dd482f9f887286541",
+  "pullRequestTitle": "PZ Server Architect 0.3.0 Preview: Desktop-App, Profile und Dokumentation",
+  "releaseState": "not-published"
+}

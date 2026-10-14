@@ -1,19 +1,53 @@
-# Prüfstand: GitHub-only Updater-SDK 0.2.0
+# Prüfstand 0.3.0 Preview
 
-## Lokal ausgeführt am 14. Oktober 2026
+## Lokal tatsächlich ausgeführt
 
-OpenJDK/javac 21.0.12.1 unter Linux. Alle Java-Quellen mit `--release 21 -Xlint:all -Werror` kompiliert. **128 Offline-Assertions bestanden.**
+Umgebung: Debian 13 x64, OpenJDK/javac 21.0.12.1, UTF-8, Xvfb für GUI.
 
-Geprüft: JSON-Grenzen, SemVer, Plattformnamen, feste GitHub-Endpunkte, stabile Releaseauswahl, SDK-Ausschluss, weitere Releaseseiten, manipulierte Links, abgeschnittene Suche, gleiche/ältere Versionen, beschädigte und unvollständige Downloads, SHA-256/Größe, Cacheprüfung, Rate-Limit-Wartezeiten, Retry-After, Reset-Zeit, asynchroner Download, fehlende Geheimnisse in Fehlermeldungen und Schutz ungespeicherter Arbeit vor Installerstart.
+- Java-Code mit --release 21 -Xlint:all -Werror kompiliert.
+- 128 bestehende Offline-Prüfungen des GitHub-only-Updaters bestanden.
+- 941 Editor-/Profil-/Parser-Prüfungen bestanden: alle Katalogeinträge,
+  typisierte Eingaben, Kommentare/Zeilenenden, Duplikate und Codeablehnung,
+  Presets, Profilhistorie, Papierkorb, Konflikte, Geheimnisbehandlung und Export.
+- 31 UI-Prüfungen: echtes Swing-Fenster, Seitenwechsel, Toggle-Bedienung,
+  Modelldaten, kleineres Fenster und gerenderte Screenshots.
+- Neun unabhängige Syntaxprüfungen der erzeugten Lua-Dateien mit Lua 5.4; keine Codeausführung und nicht die PZ-Laufzeit.
+- Assistent-Vorschau, Übernahme und Profilspeicherung zusätzlich über die echten Buttons geprüft.
+- JAR mit eingebetteten Ressourcen und nativem App-Icon gestartet.
+- Linux-x64-App-Image mit gebündelter Java-Laufzeit sowie DEB-Paket gebaut.
+- DEB in einen separaten Ordner entpackt und dessen nativen Launcher mit der
+  gebündelten Laufzeit gestartet: sichtbares 1400×920-Fenster aufgenommen.
+  Keine systemweite Installation durch dpkg/apt ausgeführt.
 
-In den lokalen Tests ersetzen kontrollierte Streams die Netzwerkquelle. Paketbytes sind inerte Fixtures und werden nie ausgeführt. Die ursprünglichen Dateien wurden vor Bearbeitung über ihren Git-Tree-Hash mit dem aktuellen PR-Stand abgeglichen.
+Der vollständige aktuelle Buildbericht liegt im Lieferpaket unter test-report.txt.
+Die lokale UI-Prüfung verwendet nur einen separaten temporären Datenordner und
+Offline-Modus. Es wurden keine echten Userprofile oder Spielstände geändert.
 
-## GitHub Actions
+## Nicht durch diesen Lauf belegt
 
-Die vorhandene Matrix kompiliert und testet unter Windows, macOS und Linux. Für Linux ist zusätzlich eine reale öffentliche GitHub-Metadatenabfrage ohne `--download` vorgesehen. Der erzeugte Bericht beschreibt das tatsächliche Ergebnis, gegebenenfalls „noch kein Release“.
+- Windows-/macOS-Starter, deren native Installer und GUI-Bedienung.
+- Eine neue GitHub-CI oder Veröffentlichung. Die vorhandene ältere erfolgreiche
+  Updater-CI ist kein Nachweis dieser neuen Desktop-App.
+- Vollständige Versionskompatibilität aller Katalogwerte mit sämtlichen PZ-Builds.
+- Spieltest mit Project Zomboid, Modkombination, Multiplayer und AMP.
+- Erfolgreicher Live-Serverstatusabruf; nur Parser-Fixture geprüft.
+- Vollständiger automatischer Paketdownload mit tatsächlicher Updateinstallation.
+- Zertifikatssignierung/Notarisierung durch einen Windows- oder Apple-Herausgeber.
 
-Ein konfigurierter Workflow ist kein Beleg eines bereits erfolgreichen Laufs. Ergebnisse von SDK 0.1.0 gelten nicht automatisch für 0.2.0. Der aktuelle PR-Lauf und seine Artefakte sind getrennt zu prüfen.
+Erstellte Bildschirmbilder sind echte lokale Programmdarstellungen, keine Mockups.
 
-## Nicht belegt
+## Wiederholungsprüfung vor dem lokalen Git-Commit
 
-Eine fertige Konfigurator-GUI, Datenerhalt des künftigen Editors, echte native Installer, OS-Herausgebersignaturen, automatischer App-Neustart, Rollback und ein vollständiger Live-Paketdownload mit anschließender Installation. Ein erfolgreicher Metadatenabruf prüft noch keinen Download-/Installationszyklus. Project Zomboid selbst wird durch diese Tests nicht gestartet.
+Am 14. Oktober 2026 erneut ausgeführt: Java-Build mit 128 Updater- und 941
+App-Assertions sowie 31 GUI-Prüfschritte unter Linux/Xvfb. Die README-Bilder
+stammen aus diesem erneuten lokalen GUI-Lauf. Berichte: [Build](checks/test-report.txt)
+und [GUI](checks/ui-test-report.txt).
+
+Anwendungscode, Katalog, Theme und Icondateien wurden gegenüber dem gelieferten
+0.3.0-Quellpaket bytegenau beibehalten. Änderungen dieses Schritts betreffen
+Repositorydokumentation, Vorlagen, Screenshots und Workflow-Pinning.
+
+Die aktuelle GitHub-Schnittstelle erlaubt Lesen, aber keine Schreibaktionen.
+Der direkte Git-Netzwerkzugriff konnte github.com in dieser Umgebung nicht
+auflösen. Deshalb belegt dieser Schritt keinen Push, neuen GitHub-CI-Lauf oder
+neues öffentliches Release. Ein lokaler Commit ist davon zu unterscheiden.

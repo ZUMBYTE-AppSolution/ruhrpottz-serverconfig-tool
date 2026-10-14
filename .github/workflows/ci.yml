@@ -1,0 +1,42 @@
+name: Updater SDK checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: updater-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Compile and run offline checks
+        run: python tools/build.py
+      - name: Check real public GitHub metadata (no download)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          java -jar build/PZ-Server-Architect-Updater-0.2.0.jar --current 0.0.0 --cache ./build/github-probe > build/live-github-check.txt
+          cat build/live-github-check.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: updater-sdk-${{ matrix.os }}
+          path: |
+            build/*.jar
+            build/test-report.txt
+            build/*-check.txt
+          if-no-files-found: error
+          retention-days: 14

@@ -1,6 +1,40 @@
 # Changelog
 
-## Unreleased: Updater-SDK 0.2.0
+## 0.3.0 Preview · 2026-10-14
+
+### Repository und Dokumentation
+- Vollständigen Desktop-Quellstand zur GitHub-Übernahme vorbereitet.
+- README mit App-Icon, Funktionsübersicht, Paketwahl, Bedienung, Datenschutz, Updates und Support im Stil der Zumbyte-Projekte ergänzt.
+- Kompakte Katalogressource wird beim Build verlustfrei entpackt; PNG/ICO/ICNS werden aus demselben, für Desktopgröße optimierten Icon-Motiv erzeugt.
+- Bestehende Graphit-Lila-Gestaltung und GitHub-only-Ausrichtung beibehalten.
+
+### Neue Desktop-App
+- Echte Swing-Oberfläche im vorhandenen Graphit-Lila-Design mit eingebundenem App-Icon.
+- 360 Katalogeinträge, zusätzlich importierte Modfelder, Werte-Hilfen und Originalkommentare.
+- Toggle-Switches für echte Ein/Aus-Werte, Dropdowns und validierte Zahlen/Textfelder.
+- Neun Fragen im Quick Start, acht neutrale Vorlagen und Änderungsvorschau.
+- Lokale Profile, zehn Wiederherstellungspunkte, Papierkorb, JSON-Import/-Export und Undo/Redo.
+- Datentabellenparser ohne Lua-Ausführung; INI/Lua-Kommentare und Reihenfolgen erhalten.
+- Maskierter Originalvergleich, validierter Quelltexteditor und neues Export-ZIP.
+- GitHub-only-Updater tatsächlich mit der Startlogik und Updateansicht verbunden.
+- Separater RuhrpottZ-Hinweis und manueller Parser für öffentliche Serverlisten-Daten.
+- Java-Ausgabe, plattformeigene jpackage-Buildkette, Linux-x64-Pakete und Handbuch.
+
+### Korrekturen
+- Fehlende Werte von false/0 unterschieden; Dropdown-Zustand entfernt Schlüssel tatsächlich.
+- Übernahme ungültiger ausstehender Eingaben beim Seitenwechsel verhindert.
+- Bewusstes Leeren einer redigierten Kennworteingabe entsperrt den Export.
+- Positive Populationsvorlagen lösen vorherige zivile Populations-/Migrationssperren.
+- Vorlagen behalten keine künstliche RuhrpottZ-Identität oder Serverzugangsdaten.
+
+### Prüfungen und Liefergrenzen
+- Java 21 mit -Xlint:all -Werror kompiliert; 941 Editor-/Profil- und 128 Updater-Assertions.
+- 31 GUI-Prüfungen mit einem tatsächlich geöffneten Swing-Fenster unter Linux/Xvfb.
+- Linux-Paket gebaut, Java-Plattformstarter enthalten; Windows/macOS noch nicht ausgeführt.
+- GitHub-Übernahme dieses Quellstands; CI-Ergebnisse separat am jeweiligen Commit prüfen. Kein stabiles Release allein durch einen Push.
+- Kein vollständiger Live-Update-/Installerzyklus oder Project-Zomboid-/AMP-Spieltest.
+
+## Updater-SDK 0.2.0 · Historischer Entwicklungsstand
 
 ### Geändert
 - Auf ausdrücklichen Wunsch vollständig auf GitHub Releases umgestellt.
@@ -16,8 +50,8 @@
 - CI-Matrix bleibt für Windows, macOS und Linux eingerichtet; Linux erhält zusätzlich eine echte öffentliche Metadatenabfrage ohne Download.
 - Ergebnisse dieser neuen CI-Läufe sind unabhängig von den bereits erfolgreichen 0.1.0-Läufen zu prüfen.
 
-### Noch offen
-- JavaFX-Konfigurator, Editor, Katalogmigration, Profile, Assistent und Servermonitor.
+### Damals noch offen
+- Konfigurator, Editor, Katalogmigration, Profile, Assistent und Servermonitor. Die erste Desktop-Umsetzung folgt oben mit 0.3.0 und verwendet Swing statt JavaFX.
 - Native Installer, Betriebssystem-Signierung und vollständiger Live-Update-/Installationstest.
 
 ## Updater-SDK 0.1.0: ursprüngliche Entwicklungsgrundlage

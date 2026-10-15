@@ -20,16 +20,20 @@
 
 ### Geändert
 
-- Übersicht mit klaren Einstiegsaktionen für Import, Quick Start und Einstellungen.
-- Kompakte Navigation; alle 17 Einstellungsbereiche sind jetzt im Editor auswählbar.
-- Größere Typografie, mehr Abstand, gerundete Karten sowie lila Buttons mit Glow bei Fokus und Berührung.
+- Lesbare Windows-Systemschrift, höherer Textkontrast und ein durchgehend dunkles Oberflächenlayout.
+- Seitenleiste mit lokal gebündelten Iconify-Icons, aufklappbaren Einstellungsbereichen und klarer Markierung der aktiven Seite.
+- Quick Start als eigenes Assistentenfenster mit neun erklärten Schritten, Zurück/Weiter und abschließender Änderungsvorschau.
+- Profilauswahl als Dropdown zum direkten Wechseln und Anlegen; Profilverwaltung mit verständlichem Leerzustand.
+- Einheitlich gestaltete Dropdowns, neu angeordnete Editor-Aktionen und Glossy-Buttons mit Glow.
+- RuhrpottZ mit Discord-Button und automatischem Abruf des öffentlichen Serverstatus beim Öffnen und alle 15 Sekunden.
 - Öffentliche und unveröffentlichte Arbeit auf zwei Repositorys verteilt: `main` öffentlich, `test` privat.
 
 ### Geprüft
 
 - Java 21 kompiliert; 128 Updater- und 941 App-Prüfungen lokal bestanden.
-- 32 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden.
-- Windows x64 als portables Paket und MSIX-Testpaket lokal gebaut; die native App beantwortete `--version`.
+- 41 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden, einschließlich Assistent, Profilwechsel und Status-Timer.
+- Windows x64 als portables Paket und MSIX-Testpaket lokal neu gebaut; die native App wurde sichtbar für die Begutachtung gestartet.
+- Die öffentliche RuhrpottZ-Statusseite wurde mit dem Java-Abruf und dem Parser live gelesen. Der angezeigte Status stammt aus dieser externen Serverliste.
 - Vier private Actions-Jobs erfolgreich; neun Plattformpakete und ihre SHA-256-Dateien aus den Artefakten nachgerechnet.
 
 ## [0.3.0] - 2026-10-15 · öffentliches Preview-Release

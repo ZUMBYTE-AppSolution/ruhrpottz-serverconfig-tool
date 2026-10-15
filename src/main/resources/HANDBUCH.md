@@ -14,10 +14,10 @@ wurde auf Debian 13 x64 gebaut. Andere Distributionen können Bibliotheken oder
 eine neuere glibc benötigen. Die Java-Ausgabe ist die Alternative mit einer
 passenden Java-21-Laufzeit deines Systems.
 
-Windows-/macOS-Starter wurden hier nicht auf echten Zielgeräten ausgeführt.
-Native Windows-/macOS-Pakete müssen mit dem mitgelieferten GitHub-Workflow
-gebaut und anschließend installiert/getestet werden. Die UI ist keine JavaFX-
-Oberfläche: sie verwendet Swing, wie der zuletzt gezeigte Desktopentwurf.
+Das portable Windows-Paket wurde als echte Desktop-App gestartet und bedient.
+Der private Actions-Workflow baut zusätzlich MSI, ein unsigniertes MSIX-Testpaket,
+macOS-DMGs und Linux-DEB. Eine systemweite Installation dieser Pakete ist noch
+nicht bestätigt. Die Oberfläche verwendet Swing.
 
 ## 1. Ausgangspunkt
 
@@ -67,9 +67,10 @@ Acht allgemeine Vorschläge: Koop & Freunde, PvE Community, Survival ausgewogen,
 Hardcore Survival, PvP Survival, Roleplay mit Zombies, Ziviles Roleplay,
 Bauen & Testen. Es gibt kein RuhrpottZ-Konfigurationsprofil.
 
-Der Assistent stellt neun Fragen auf einer gemeinsamen Seite: Spielrichtung,
-Zombiepopulation, Tageslänge, Alltagsloot, Zombie-Wiederkehr, PvP, Lernfortschritt,
-Versorgung und Wetter/Sicht. "Wie Vorlage" übernimmt die gewählte Spielrichtung.
+Der Assistent öffnet ein eigenes Fenster mit neun erklärten Schritten und
+Zurück/Weiter: Spielrichtung, Zombiepopulation, Tageslänge, Alltagsloot,
+Zombie-Wiederkehr, PvP, Lernfortschritt, Versorgung und Wetter/Sicht.
+"Wie Vorlage" übernimmt die gewählte Spielrichtung.
 Wetter und Versorgung bleiben ohne bewusste Antwort unverändert.
 
 Vor der Übernahme erscheint ein Vergleich. "Nur bereits vorhandene Schlüssel
@@ -89,8 +90,9 @@ Klare Sicht/Tag regeln Wetter/Licht, nicht unbegrenzte clientseitige Renderdista
 
 ## 4. Profile und Daten
 
-Profile können gespeichert, geöffnet, dupliziert, umbenannt und in den Papierkorb
-verschoben werden. Notizen und ein Serverdateiname gehören zum Profil.
+Profile können oben über „Aktives Profil“ gewechselt oder neu angelegt sowie
+gespeichert, geöffnet, dupliziert, umbenannt und in den Papierkorb verschoben
+werden. Notizen und ein Serverdateiname gehören zum Profil.
 Jede weitere Speicherung sichert die vorige Fassung; maximal zehn alte Fassungen
 pro Profil bleiben erhalten. Eine Wiederherstellung erzeugt eine unabhängige Kopie.
 Änderungen im aktuellen Arbeitsbereich besitzen bis zu 40 Undo-/Redo-Schritte.
@@ -165,20 +167,20 @@ unter Linux. Andere Linux-Paketmanager sind damit nicht automatisch abgedeckt.
 
 Ein ZIP/JAR der Preview ist kein automatisches App-Update. Ein Release muss erst
 vollständig gebaut, hochgeladen und als stabil veröffentlicht sein, damit es
-angeboten wird. Es wurde in diesem Entwicklungsschritt kein Release veröffentlicht.
+angeboten wird. Der öffentliche Stand ist v0.3.0; v0.4.0 bleibt Teststand.
 Die App arbeitet auch ohne Netzwerk. `--offline` unterbindet in Testläufen ihre
 Update- und Serverabfragen; bewusst geöffnete Browserlinks bleiben eigene Aktionen.
 
 ## 8. RuhrpottZ und Serverstatus
 
-RuhrpottZ ist nur ein getrennter Server-Tipp: German ZomboID Roleplay Project.
-https://pzservers.net/server/75212135
-Discord folgt, daher gibt es noch keinen Discord-Beitrittsbutton.
+RuhrpottZ ist ein getrennter Community-Bereich: German ZomboID Roleplay Project.
+Der Discord-Button öffnet die Einladung https://discord.gg/hWz2HJcakH.
 
-Status wird nach Klick über HTTPS aus der öffentlichen Listenseite gelesen,
-maximal einmal pro Minute. Quelle und Abrufzeit werden angezeigt. Änderungen am
-Seitenformat, Sperren oder Netzfehler bedeuten "unbekannt", nicht sicher "offline".
-Diese HTML-Anbindung wurde mit einer Testseite geprüft, nicht live bestätigt.
+Beim Öffnen und danach alle 15 Sekunden wird der öffentliche Status über HTTPS
+von pzservers.net/server/75212135 abgerufen, solange die Seite sichtbar ist.
+Quelle und Abrufzeit werden angezeigt. Änderungen am Seitenformat, Sperren oder
+Netzfehler bedeuten "unbekannt", nicht sicher "offline". Der Java-Abruf und die
+Auswertung der Live-Seite wurden geprüft; die Serverliste kann zeitversetzt sein.
 Keine erfundenen CPU-/RAM-/Ping-/Uptime-Werte und kein automatisches Spielertracking.
 
 ## 9. Hilfe und Grenzen
@@ -189,7 +191,8 @@ UI-Größe 90/100/110/125 Prozent gilt nach App-Neustart.
 
 Die Oberfläche wurde unter Windows als echtes Swing-Fenster geprüft. Windows,
 macOS und Linux wurden für die öffentliche Version 0.3.0 auf GitHub gebaut.
-Die neue 0.4.0-Plattformmatrix sowie ein Spieltest mit Project Zomboid, deiner
-Modkombination und AMP stehen noch aus. Aktuelle Ergebnisse: docs/TESTSTATUS.md.
+Die private 0.4.0-Plattformmatrix war erfolgreich; die aktuelle Neugestaltung
+wird erneut gebaut. Ein Spieltest mit Project Zomboid, deiner Modkombination und
+AMP steht aus. Aktuelle Ergebnisse: docs/TESTSTATUS.md.
 
 Unabhängiges Werkzeug, nicht mit The Indie Stone verbunden.

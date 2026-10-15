@@ -13,7 +13,7 @@
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-lesen-6d28d9"></a>
 </p>
 
-> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die neue Oberfläche v0.4.0 hat die private Plattformprüfung bestanden und steht hier als Teststand bereit. Die App verändert keinen laufenden Server.
+> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die neu gestaltete v0.4.0 ist ein privater Teststand zur Begutachtung. Die App verändert keinen laufenden Server.
 
 ![Übersicht der Desktop-App](docs/images/overview.png)
 
@@ -21,14 +21,17 @@
 
 | Aufgabe | In der App |
 |---|---|
-| **Schnell starten** | Neun Fragen und acht neutrale Vorlagen mit Änderungsvorschau. |
+| **Schnell starten** | Eigenes Assistentenfenster mit neun erklärten Schritten, Zurück/Weiter und Änderungsvorschau. |
 | **Werte verstehen** | 360 erklärte Katalogeinträge in 17 Bereichen sowie importierte Modfelder. |
 | **Gezielt bearbeiten** | Suche, Bereichsauswahl, Favoriten, passende Schalter und Auswahlfelder, Undo und Redo. |
-| **Profile behalten** | Lokal speichern, kopieren, umbenennen, wiederherstellen und als JSON übertragen. |
+| **Profile behalten** | Oben direkt wechseln oder neu anlegen; lokal speichern, kopieren, umbenennen, wiederherstellen und als JSON übertragen. |
 | **Dateien sicher übernehmen** | INI und Sandbox-Lua importieren, prüfen und als neues ZIP exportieren. |
 | **Updates finden** | GitHub-Releases prüfen und passende Pakete nach Prüfsummenvergleich laden. |
+| **Community besuchen** | RuhrpottZ-Status beim Öffnen und alle 15 Sekunden abrufen; Discord über einen eigenen Button öffnen. |
 
-Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkonfiguration. Der RuhrpottZ-Eintrag ist ein separater, manuell abrufbarer Community-Tipp.
+Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkonfiguration. Der RuhrpottZ-Eintrag liest eine öffentliche Serverliste und bleibt getrennt von deinen Profilen.
+
+![RuhrpottZ mit Serverstatus und Discord-Button](docs/images/community.png)
 
 ## Installation
 
@@ -40,6 +43,8 @@ Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkon
 Das MSIX-Testpaket aus dem Entwicklungsbuild ist derzeit **nicht signiert** und verwendet eine Entwicklungsidentität. Für eine Store-Abgabe fehlen noch die Reservierung und Paketidentität aus Microsoft Partner Center. Das Windows-ZIP ist sofort startbar; der MSI-Installer des öffentlichen v0.3.0-Releases ist ebenfalls verfügbar. [MSIX-Stand](docs/RELEASES.md)
 
 ![Einstellungen mit Bereichsauswahl](docs/images/settings.png)
+
+![Quick Start als geführtes Fenster](docs/images/wizard.png)
 
 ## Hinweise zu deinen Daten
 

@@ -1,0 +1,53 @@
+package de.zumbyte.pzarchitect.app;
+
+import de.zumbyte.pzarchitect.update.Json;
+import java.io.*;
+import java.math.BigDecimal;
+import java.nio.file.*;
+import java.util.*;
+import java.util.zip.ZipFile;
+
+public final class AppSelfTest {
+    static int checks;
+    interface Checked{void run()throws Exception;}
+    static void ok(boolean pass,String what){if(!pass)throw new AssertionError(what);checks++;}
+    static void rejects(Checked action,String what)throws Exception{try{action.run();}catch(Exception e){checks++;return;}throw new AssertionError("Expected rejection: "+what);}
+    static Object value(ConfigDocument d,List<?> p){return d.fields.get(ConfigDocument.id(d.scope,p)).value();}
+    static void same(Object a,Object b,String what){ok(Catalog.equal(a,b),what);}
+    public static void main(String[] args)throws Exception{
+        Path root=Files.createTempDirectory("pz-architect-tests-");try{
+            Catalog c=new Catalog();ok(c.settings.size()==360,"catalog count");ok(c.categories.size()==17,"categories");
+            for(Catalog.Setting s:c.settings.values()){
+                ok(!s.valueGuide().isBlank(),"guide "+s.key);
+                Object test=s.binary()?true:!s.choices.isEmpty()?s.choices.getFirst().value():s.type.equals("integer")||s.type.equals("number")||s.type.equals("enum")?(s.min==null?BigDecimal.ONE:s.min):"Prüfwert Rünthe";
+                if(s.binary()&&!s.type.equals("boolean"))test=BigDecimal.ONE;
+                Object parsed=s.parse(Catalog.display(test));ConfigDocument doc=new ConfigDocument(s.scope,s.scope.equals("ini")?"":"SandboxVars = {}\n").set(s.path,parsed);same(value(doc,s.path),parsed,"catalog scalar roundtrip "+s.key);
+                if(s.binary()){Object off=s.type.equals("boolean")?false:BigDecimal.ZERO;doc=doc.set(s.path,off);same(value(doc,s.path),off,"toggle off "+s.key);}
+            }
+            String lua="\ufeff-- Preserve\r\nSandboxVars = {\r\n  VERSION=6, -- version\r\n  Name='Rünthe',\r\n  Mod = {Enabled=true, [\"a.b\"] = 0.5, [1]='eins', [2]=false, Nil=nil, Empty={}, Values={10, 20, 30}},\r\n  Long=[=[hello\nworld]=],\r\n}\r\n";
+            ConfigDocument d=new ConfigDocument("lua",lua);same(value(d,List.of("Mod","a.b")),new BigDecimal("0.5"),"dotted key");same(value(d,List.of("Mod",BigDecimal.ONE)),"eins","numeric key");ok(d.fields.containsKey(ConfigDocument.id("lua",List.of("Mod","Nil"))),"nil presence");
+            ConfigDocument changed=d.set(List.of("Mod","Enabled"),false);ok(changed.source.equals(lua.replace("Enabled=true","Enabled=false")),"exact source span preservation");
+            changed=changed.set(List.of("New","Nested","Flag"),true);same(value(changed,List.of("New","Nested","Flag")),true,"new nested table");changed=changed.set(List.of("Mod","Empty","X"),BigDecimal.TEN);same(value(changed,List.of("Mod","Empty","X")),BigDecimal.TEN,"existing empty table insertion");
+            changed=changed.remove(ConfigDocument.id("lua",List.of("Name")));ok(!changed.fields.containsKey(ConfigDocument.id("lua",List.of("Name"))),"field remove");ok(changed.source.startsWith("\ufeff-- Preserve\r\n"),"BOM and line endings");
+            for(String s:List.of("SandboxVars={ X=1 }", "SandboxVars={ X=1, }", "SandboxVars={}","SandboxVars={ --comment\n }")){ConfigDocument p=new ConfigDocument("lua",s).set(List.of("A"),true).set(List.of("B"),false);ok(p.fields.size()>=2,"insert delimiters");new ConfigDocument("lua",p.remove(ConfigDocument.id("lua","A")).source);checks++;}
+            for(String text:List.of("SandboxVars={A=1,A=2}","SandboxVars={A=1 A=2}","SandboxVars={X=os.execute('bad')}","SandboxVars={}; print('bad')","return {}","SandboxVars={X=function()end}","SandboxVars={X=0x10}","SandboxVars={X=1e9999}","SandboxVars={X='\\uFFFF'}","SandboxVars={X=[=[unclosed}","SandboxVars={X='\\999'}","SandboxVars={X={Y=1},X=2}"))rejects(()->new ConfigDocument("lua",text),"unsafe or unsupported Lua");
+            for(String s:List.of("a\nb\t\"\\\r", "Zürich ÄÖÜ Straße", "😀🚀", "\u0001\u0007end")){ConfigDocument p=new ConfigDocument("lua","SandboxVars={}").set(List.of("S"),s);same(value(p,List.of("S")),s,"string roundtrip");}
+            String ini="# exact\r\nPVP=true\r\nMap=Custom;Muldraugh, KY\r\nMods=\\M1;\\M2\r\nPassword=hello=there\r\n";ConfigDocument i=new ConfigDocument("ini",ini);ok(i.set(List.of("PVP"),false).source.equals(ini.replace("PVP=true","PVP=false")),"INI preservation");same(value(i,List.of("Password")),"hello=there","equals inside INI");rejects(()->i.set(List.of("Map"),"x\nInjected=true"),"INI injection");rejects(()->new ConfigDocument("ini","PVP=true\nPVP=false"),"duplicate INI");rejects(()->d.set(List.of("Mod"),"bad"),"table overwrite");rejects(()->d.set(List.of("Name","bad"),true),"scalar as table");
+            Workspace w=new Workspace();String original=w.ini.source;Catalog.Setting pvp=c.settings.get("ini:PVP");w.set(pvp,true);ok(w.dirty,"dirty flag");ok(w.undo(),"undo available");ok(w.ini.source.equals(original),"undo exact");ok(w.redo(),"redo available");w.restore(pvp);ok(!w.ini.fields.containsKey(pvp.id),"restore absent");
+            for(Presets.Preset preset:Presets.ALL){Workspace x=new Workspace();x.apply(preset.values(),c,false);ok(x.lua.fields.size()>10,"preset populated "+preset.name());ok(!x.ini.source.contains("RuhrpottZ"),"neutral preset");same(x.ini.fields.get("ini:Map").value(),"Muldraugh, KY","map untouched");new ConfigDocument("lua",x.lua.source);checks++;Path zip=root.resolve(preset.name().replaceAll("[^A-Za-z]","")+".zip");x.exportZip(zip,c);try(ZipFile z=new ZipFile(zip.toFile())){ok(z.getEntry("servertest_SandboxVars.lua")!=null,"native pair in ZIP");}rejects(()->x.exportZip(zip,c),"no overwrite ZIP");Files.writeString(root.resolve("preset-"+checks+".lua"),x.lua.source);}
+            Workspace only=new Workspace();int fields=only.lua.fields.size();only.apply(Presets.ALL.getFirst().values(),c,true);ok(only.lua.fields.size()==fields,"existing-only no new fields");
+            Path a=root.resolve("test.ini"),b=root.resolve("test_SandboxVars.lua");Files.writeString(a,ini);Files.writeString(b,lua);Workspace imported=new Workspace();imported.importPair(a,b);ok(imported.ini.source.equals(ini)&&imported.lua.source.equals(lua),"pair import exact");rejects(()->imported.importPair(a,root.resolve("other.lua")),"mismatched pair");
+            ProfileStore store=new ProfileStore(root.resolve("store"));w=new Workspace();w.name="Ö-Test";w.set(c.settings.get("ini:Password"),"UNIQUE_SECRET");Path saved=store.save(w);String raw=Files.readString(saved);ok(!raw.contains("UNIQUE_SECRET"),"secret stripped");Workspace loaded=store.load(saved);ok(loaded.requiredSecrets.contains("ini:Password"),"redaction remembered");ok(loaded.validate(c).stream().anyMatch(Workspace.Issue::error),"redacted export blocked");rejects(()->loaded.exportZip(root.resolve("secret-export.zip"),c),"redacted export refusal");loaded.set(c.settings.get("ini:Password"),"");ok(loaded.requiredSecrets.isEmpty(),"intentional secret clearing");store.save(loaded);ok(store.list(store.history.resolve(loaded.id)).size()==1,"history written");
+            Workspace concurrent=store.load(saved);Workspace fresh=store.load(saved);fresh.notes="Another window";store.save(fresh);rejects(()->store.save(concurrent),"external change detected");for(int n=0;n<12;n++){fresh.notes="revision"+n;store.save(fresh);}ok(store.list(store.history.resolve(fresh.id)).size()==10,"history limited");Path deleted=store.delete(saved);ok(!Files.exists(saved)&&Files.exists(deleted),"trash");Workspace restored=store.restore(deleted);ok(!restored.id.equals(fresh.id),"restore as independent copy");ok(store.list(store.profiles).size()==1,"restored profile list");Files.writeString(store.profiles.resolve("corrupt.json"),"{invalid");ok(store.list(store.profiles).stream().anyMatch(e->!e.error().isBlank()),"corrupt profile isolated");rejects(()->store.delete(root.resolve("other.json")),"delete outside profiles");
+            String status=App.statusText("<html><h2>Server Details</h2><p>Address: 127.0.0.1:1</p><p>Status: Online</p><p>Players: 1 / 8</p><h2>Claim Server</h2></html>");ok(status.contains("Online")&&!status.contains("Claim Server"),"status parser fixture");rejects(()->App.statusText("<h1>Access denied</h1>"),"unknown server status on bad page");
+            Workspace comments=new Workspace();comments.ini=new ConfigDocument("ini","# Min=0 Max=1\nMySwitch=0\n# 0 = Aus\n# 1 = Ein\nOtherSwitch=1\n# 1 = Kurz\n# 2 = Lang\nMyMode=2\n# Min=2 Max=10\nMyCount=3\n");
+            Map<String,Catalog.Setting> annotated=new HashMap<>();for(Catalog.Setting s:c.all(comments))annotated.put(s.key,s);
+            ok(annotated.get("MySwitch").binary(),"numeric switch documented by range");ok(annotated.get("OtherSwitch").binary(),"numeric switch documented by labels");ok(!annotated.get("MyCount").binary(),"integer not arbitrary switch");ok(annotated.get("MyMode").choices.size()==2,"comment enums");rejects(()->annotated.get("MyCount").parse("11"),"comment max enforced");
+            Workspace switching=new Workspace();switching.apply(Presets.ALL.get(6).values(),c,false);ok(switching.is("lua","Zombies",new BigDecimal("6")),"civilian choice");switching.apply(Presets.ALL.get(2).values(),c,false);ok(switching.is("lua","Zombies",new BigDecimal("4")),"survival clears civilian population choice");ok(switching.is("lua","ZombieMigrate",true),"survival restores migration");ok(switching.num("lua","ZombieConfig.RedistributeHours",0)>0,"survival restores redistribution");
+            Catalog.Setting daySetting=c.settings.get(ConfigDocument.id("lua","DayLength"));switching.unset(daySetting);ok(!switching.lua.fields.containsKey(daySetting.id),"enum unset actually removes field");ok(switching.undo()&&switching.lua.fields.containsKey(daySetting.id),"enum unset undo");
+            Workspace largeUnicode=new Workspace();largeUnicode.ini=new ConfigDocument("ini","Description="+"界".repeat(170000)+"\n");largeUnicode.originalIni=largeUnicode.ini;rejects(()->store.save(largeUnicode),"profile UTF-8 byte limit before saving");ok(!Files.exists(store.profiles.resolve(largeUnicode.id+".json")),"no oversized unloadable profile created");
+            System.out.println("PASS: "+checks+" application assertions. No live game, no remote writes.");
+            if(args.length>0){Path out=Path.of(args[0]);Files.createDirectories(out);try(var files=Files.list(root)){for(Path f:files.filter(p->p.toString().endsWith(".lua")).toList())Files.copy(f,out.resolve(f.getFileName()),StandardCopyOption.REPLACE_EXISTING);}}
+        }finally{try(var paths=Files.walk(root)){for(Path p:paths.sorted(Comparator.reverseOrder()).toList())Files.deleteIfExists(p);}}
+    }
+}

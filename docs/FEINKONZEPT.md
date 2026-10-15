@@ -1,4 +1,11 @@
+> Historisches Soll-Konzept. Der tatsächliche Stand der Desktop-Preview 0.3.0
+> steht in README.md und HANDBUCH.md. Die implementierte UI nutzt Swing statt
+> JavaFX. Noch nicht umgesetzte Konzeptpunkte dürfen nicht als vorhanden gelten.
+
 # PZ Server Architect: Produktrichtung
+
+> Historisches Soll-Konzept. Der aktuelle Desktopstand 0.3.0 verwendet **Swing statt JavaFX**.
+> Maßgeblich für implementierte Funktionen und Prüfgrenzen sind README, Changelog und TESTSTATUS.
 
 **Soll-Konzept, nicht mit der aktuellen Implementierung gleichzusetzen.** Die aktuelle Umsetzung steht im README und CHANGELOG.
 

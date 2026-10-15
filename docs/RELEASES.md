@@ -1,34 +1,39 @@
-# Releases und Changelogs
+# Desktop-Releases
 
-## Aktueller Lieferstand
+Die App-Version ist 0.3.0 Preview. Die vorhandene GitHub-only-Updatebibliothek ist
+Version 0.2.0; diese beiden Versionen werden nicht gleichgesetzt.
 
-Das Updater-SDK ist keine vollständige Desktop-App. CI kompiliert und testet das Java-Modul auf vorgesehenen Windows-, macOS- und Linux-Runnern und stellt JAR plus Testbericht als Workflow-Artefakte bereit. Ein vorhandener Workflow ist kein Nachweis, dass er bereits erfolgreich gelaufen ist.
+`tools/build.py` baut die eigentliche App und führt die beiden Offline-Testpakete
+aus. `tools/package.py` erzeugt ein natives App-Image mit Laufzeit und optional
+einen Installer. Die Paketierung erfolgt auf dem jeweiligen Betriebssystem.
 
-`Draft updater SDK release` ist ausschließlich manuell auslösbar. Er erstellt nach Tests einen **Draft und Prerelease** mit dem nicht als App-SemVer interpretierbaren Tag `sdk-v0.2.0`. Dieser Entwurf enthält das SDK, Quellcode, JAR, Prüfsumme und Testbericht. Er wird nicht automatisch öffentlich geschaltet und vom App-Updater nicht angeboten. Wiederholtes Erstellen eines bereits vorhandenen Tags wird nicht still überschrieben.
+Die CI erstellt auf Windows x64, Linux x64, macOS Intel und macOS Apple Silicon
+je einen nativen Installer und ein portables Paket mit Java-Laufzeit. Der
+Tag `v0.3.0` startet dieselbe Matrix erneut. Nur wenn alle vier Jobs erfolgreich
+sind und alle acht Pakete samt SHA-256-Dateien vorliegen und nachgerechnet wurden,
+veröffentlicht `desktop-release.yml` ein öffentliches **Prerelease**. Der
+Release-Job akzeptiert nur einen Commit, der in `main` enthalten ist, und
+überschreibt kein vorhandenes Release.
 
-## Spätere echte App-Releases
+Der Updater erwartet für stabile Versionen taggebundene Assets:
+`PZ-Server-Architect-VERSION-windows-x64.msi`,
+`PZ-Server-Architect-VERSION-macos-x64.dmg`,
+`PZ-Server-Architect-VERSION-macos-arm64.dmg`,
+`PZ-Server-Architect-VERSION-linux-x64.deb`.
+Weitere CPU-Kombinationen erst nach entsprechendem echten Build ergänzen.
 
-App-Tags sollen `vMAJOR.MINOR.PATCH` verwenden. Erwartete native Paketnamen:
+Die portablen Archive und Java-JARs sind keine automatischen Installerpakete.
+Ein Prerelease wird vom stabilen App-Updater nicht automatisch geladen; die
+Preview ist über die GitHub-Release-Seite manuell verfügbar.
+Stabile Releases verwenden vMAJOR.MINOR.PATCH, enthalten alle freigegebenen
+Plattformdateien, Changelog und SHA-256-Digests aus GitHub. Source-only-/SDK-Tags
+oder einzelne Commits lösen keine App-Updates aus.
 
-- `PZ-Server-Architect-1.2.0-windows-x64.msi`
-- `PZ-Server-Architect-1.2.0-windows-arm64.msi`
-- `PZ-Server-Architect-1.2.0-macos-x64.dmg`
-- `PZ-Server-Architect-1.2.0-macos-arm64.dmg`
-- `PZ-Server-Architect-1.2.0-linux-x64.deb`
-- `PZ-Server-Architect-1.2.0-linux-arm64.deb`
-
-Dies sind Namensbeispiele, keine schon existierenden Dateien oder freigegebenen Versionen. Nur tatsächlich gebaute Plattformkombinationen veröffentlichen. Fehlt ein natives Paket, meldet der Client die Lücke. Keine Umdeutung einer JAR, ZIP oder Source-Datei zum Installer.
-
-Die native Buildkette mit JavaFX/jpackage, Runtime-Bundling, Signierung, Installationsprüfung und Freigabe ist noch zu implementieren. Vor Veröffentlichung: Plattformtests, vollständige Assets, klare Release Notes, SHA-256-Digests und erst anschließend Veröffentlichung des bislang als Draft geführten Releases. Erst ein veröffentlichtes stabiles App-Release wird vom GitHub-only-Updater angeboten. Kein zusätzlicher Freigabeserver ist beteiligt.
-
-## Änderungen verständlich halten
-
-`CHANGELOG.md` unterscheidet implementierte Funktionen und offene Arbeiten. Release Notes sollen Neue Funktionen, Fehlerkorrekturen, Sicherheit/Updates, bekannte Einschränkungen und Migrationshinweise enthalten. GitHubs Kategorien dafür stehen in `.github/release.yml`.
-
-Nie Testzahlen, Installer-Signaturen, GitHub-Live-Test-Ergebnisse oder Plattformkompatibilität behaupten, die nicht durch den jeweiligen Release-Build belegt wurden.
-
-## GitHub-only: kein weiterer Dienst
-
-Versionserkennung, Release Notes und Paketadressen stammen direkt aus diesem öffentlichen Repository. Endnutzer benötigen kein GitHub-Konto und keinen API-Schlüssel. Ein Draft oder Tag allein wird nicht verteilt. Der Workflow soll alle tatsächlich freigegebenen Plattformpakete vollständig hochladen, bevor das Release veröffentlicht wird.
-
-GitHubs Asset-Digests sind verpflichtend für den automatischen Download; bloße SHA-256-Textdateien oder Source-Archive werden nicht als Installer verwendet. Kein Masterserver-Deployment, keine API-Key-Einrichtung und keine VeliShell-Änderung mehr vorgesehen.
+Für Windows-MSI benötigt jpackage 21 kompatible WiX-Tools. Der Windows-2022-
+Runner stellt WiX 3.14 bereit; der Workflow setzt dessen Pfad vor der Paketierung.
+Apples Paketversionsregel erlaubt keine führende Null. Deshalb tragen macOS-
+Paketmetadaten `1.3.0`, während App-Version, Dateinamen und Release-Tag `0.3.0`
+bleiben.
+macOS-Pakete können unsigniert beziehungsweise ad-hoc-signiert sein. Sicherheits-
+funktionen nicht deaktivieren; signierte/notarisierte öffentliche Pakete bleiben
+als gesonderte Freigabeaufgabe offen.

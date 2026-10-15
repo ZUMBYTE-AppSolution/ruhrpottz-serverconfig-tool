@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile and test the updater SDK. Does not build the complete desktop application."""
+"""Build the real desktop app and run both test suites. No network or publication."""
 from pathlib import Path
 import os
 import shutil
@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 def run(*args: str) -> str:
     result = subprocess.run(args, cwd=ROOT, text=True, encoding='utf-8', errors='replace',
@@ -20,7 +20,7 @@ def run(*args: str) -> str:
 def main() -> None:
     for tool in ('java', 'javac', 'jar'):
         if not shutil.which(tool):
-            raise RuntimeError(f'{tool} not found. Install a JDK 21 for this developer build.')
+            raise RuntimeError(f'{tool} not found. A JDK 21 or newer is required for a developer build.')
     build = ROOT / 'build'
     build.mkdir(exist_ok=True)
     for sub in ('classes', 'test-classes'):
@@ -35,14 +35,17 @@ def main() -> None:
     tests = sorted(str(p.relative_to(ROOT)) for p in (ROOT / 'src/test/java').rglob('*.java'))
     compiler = run('javac', '-version')
     run('javac', *flags, '-d', 'build/classes', *sources)
+    shutil.copytree(ROOT / 'src/main/resources', build / 'classes', dirs_exist_ok=True)
     run('javac', *flags, '-cp', 'build/classes', '-d', 'build/test-classes', *tests)
-    report = run('java', '-cp', os.pathsep.join(('build/classes', 'build/test-classes')),
-                 'de.zumbyte.pzarchitect.update.UpdateSelfTest')
-    (build / 'test-report.txt').write_text(compiler + report, encoding='utf-8')
-    jar = f'build/PZ-Server-Architect-Updater-{VERSION}.jar'
-    run('jar', '--create', '--file', jar, '--main-class', 'de.zumbyte.pzarchitect.update.UpdaterCli', '-C', 'build/classes', '.')
-    run('java', '-jar', jar, '--help')
-    print(f'Built updater SDK: {jar}. Not a native configurator installer.')
+    report = compiler
+    cp = os.pathsep.join(('build/classes', 'build/test-classes'))
+    report += run('java', '-cp', cp, 'de.zumbyte.pzarchitect.update.UpdateSelfTest')
+    report += run('java', '-cp', cp, 'de.zumbyte.pzarchitect.app.AppSelfTest', 'build/preset-fixtures')
+    (build / 'test-report.txt').write_text(report, encoding='utf-8')
+    jar = f'build/PZ-Server-Architect-{VERSION}.jar'
+    run('jar', '--create', '--file', jar, '--main-class', 'de.zumbyte.pzarchitect.app.App', '-C', 'build/classes', '.')
+    run('java', '-jar', jar, '--version')
+    print(f'Desktop application built: {jar}')
 
 if __name__ == '__main__':
     try:

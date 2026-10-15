@@ -1,0 +1,3 @@
+javac 21.0.12.1
+PASS: 128 offline assertions. No live service queried. No installer executed.
+PASS: 941 application assertions. No live game, no remote writes.

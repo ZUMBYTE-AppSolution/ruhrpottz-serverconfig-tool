@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.imageio.ImageIO;
 
@@ -43,7 +44,7 @@ public final class Theme {
         JButton b=new JButton(title);b.setFont(font(15,Font.BOLD));b.setForeground(accent?new Color(25,16,43):TEXT);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setContentAreaFilled(false);b.setRolloverEnabled(true);b.setFocusPainted(false);
         b.setBorder(new EmptyBorder(px(13),px(20),px(13),px(20)));
-        b.setUI(new BasicButtonUI(){@Override public void paint(Graphics g,JComponent c){
+        b.setUI(new BasicButtonUI(){@Override protected void paintText(Graphics g,AbstractButton button,Rectangle area,String text){Graphics2D a=(Graphics2D)g.create();a.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);a.setFont(button.getFont());a.setColor(button.isEnabled()?button.getForeground():MUTED);BasicGraphicsUtils.drawStringUnderlineCharAt(a,text,button.getDisplayedMnemonicIndex(),area.x,area.y+a.getFontMetrics().getAscent());a.dispose();}@Override public void paint(Graphics g,JComponent c){
             Graphics2D g2=(Graphics2D)g.create();g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
             int w=c.getWidth(),h=c.getHeight(),r=px(14);boolean hover=b.getModel().isRollover(),press=b.getModel().isPressed();
             boolean selected=Boolean.TRUE.equals(b.getClientProperty("selectedNav"));

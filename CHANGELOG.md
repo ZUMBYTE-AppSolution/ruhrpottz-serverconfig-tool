@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 Preview-Paketierung · 2026-10-15
+
+- Vorhandene Swing-App und Graphit-Lila-Design unverändert als Buildquelle beibehalten.
+- macOS-Paketmetadaten an die Apple-Versionsregel angepasst; App-Version und Release-Tag bleiben 0.3.0.
+- Windows-MSI mit WiX, macOS-DMG und Linux-DEB sowie portable Pakete in der Actions-Matrix eingerichtet.
+- Releasekette prüft die vollständige Plattformmatrix und alle SHA-256-Werte vor einem öffentlichen Prerelease.
+- Der stabile Updater ignoriert weiterhin Preview-Releases; manuelle Downloads erfolgen über GitHub.
+
 ## Repository-Vorbereitung · 2026-10-14
 
 ### Dokumentation und Präsentation

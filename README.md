@@ -155,7 +155,7 @@ python tools/package.py --installer
 
 `jpackage` ist kein Cross-Compiler. Die Plattformpakete werden auf dem jeweiligen Betriebssystem erstellt. Für Windows-MSI ist eine kompatible WiX-Installation nötig; der portable Windows-Build benötigt sie nicht. Nach erneuter Paketierung alte Buildausgaben bewusst zur Seite legen, da vorhandene Pakete nicht still überschrieben werden.
 
-Die CI- und Draft-Release-Workflows liegen unter `.github/workflows`. Ein Commit startet gegebenenfalls CI, veröffentlicht aber kein stabiles App-Release. Siehe [Release-Ablauf](docs/RELEASES.md) und [Entwicklung](CONTRIBUTING.md).
+Die CI- und Preview-Release-Workflows liegen unter `.github/workflows`. Ein Commit startet die CI; ein `v0.3.0`-Tag auf einem Commit in `main` baut die Pakete erneut und veröffentlicht sie nach vollständiger Prüfsummenprüfung als öffentliches Prerelease. Der stabile App-Updater ignoriert Vorabversionen. Siehe [Release-Ablauf](docs/RELEASES.md) und [Entwicklung](CONTRIBUTING.md).
 
 ## 💬 Support und Dokumentation
 

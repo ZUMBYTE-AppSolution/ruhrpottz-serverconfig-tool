@@ -1,0 +1,49 @@
+name: Publish desktop preview
+on:
+  push:
+    tags: [v0.3.0]
+permissions:
+  contents: read
+jobs:
+  packages:
+    uses: ./.github/workflows/ci.yml
+  release:
+    needs: packages
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify release tag and source commit
+        shell: bash
+        run: |
+          test "$GITHUB_REF_NAME" = v0.3.0
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: desktop-*
+          path: artifacts
+      - name: Verify complete platform packages and checksums
+        run: python tools/verify_release.py artifacts release-files
+      - name: Publish public preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release already exists: $TAG" >&2
+            exit 1
+          fi
+          gh release create "$TAG" --verify-tag --target "$COMMIT" --prerelease \
+            --title 'PZ Server Architect 0.3.0 Preview' \
+            --notes-file docs/PREVIEW-RELEASE.md release-files/*

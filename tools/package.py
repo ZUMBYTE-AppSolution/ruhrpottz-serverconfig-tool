@@ -52,7 +52,10 @@ def main() -> None:
         '--strip-debug', '--no-header-files', '--no-man-pages', '--compress=2', '--output', str(runtime))
     image_dir = out / 'image'
     icon = ROOT / 'src/main/resources/assets' / ('icon.ico' if system == 'windows' else 'icon.icns' if system == 'macos' else 'icon.png')
-    common = ['--name', APP_NAME, '--app-version', VERSION, '--vendor', 'Zumbyte - Appsolution',
+    # Apple requires the first component of CFBundleShortVersionString to be positive.
+    # Keep the product/release version at 0.3.0; this value is packaging metadata only.
+    package_version = '1.' + VERSION.split('.', 1)[1] if system == 'macos' and VERSION.startswith('0.') else VERSION
+    common = ['--name', APP_NAME, '--app-version', package_version, '--vendor', 'Zumbyte - Appsolution',
               '--copyright', 'Copyright by Zumbyte - Appsolution | www.zumbyte.de',
               '--description', 'Project Zomboid server and sandbox configurator', '--icon', str(icon)]
     run('jpackage', '--type', 'app-image', '--dest', str(image_dir), '--input', str(app_input),

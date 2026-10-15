@@ -34,7 +34,13 @@ def wix_tool(name: str) -> str:
 def installer(image: Path, output: Path, work: Path) -> None:
     """Use stable component IDs/GUIDs so MSI upgrades preserve Windows Installer ownership."""
     files = sorted(p for p in image.rglob('*') if p.is_file())
-    dirs = sorted({p.parent.relative_to(image) for p in files}, key=lambda p: (len(p.parts), str(p)))
+    all_dirs = {Path('.')}
+    for file in files:
+        parent = file.relative_to(image).parent
+        while parent != Path('.'):
+            all_dirs.add(parent)
+            parent = parent.parent
+    dirs = sorted(all_dirs, key=lambda p: (len(p.parts), str(p)))
     directory_ids = {Path('.'): 'INSTALLDIR'}
     for i, directory in enumerate(d for d in dirs if d != Path('.')):
         directory_ids[directory] = f'Dir{i}'

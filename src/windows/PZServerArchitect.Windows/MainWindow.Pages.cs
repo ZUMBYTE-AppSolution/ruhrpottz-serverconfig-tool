@@ -58,7 +58,27 @@ public partial class MainWindow
         var wrap = new WrapPanel(); foreach (var step in steps) { var chip = Card(Text(step, 13, bold: true), new Thickness(14, 9, 14, 9)); chip.Margin = new Thickness(0, 0, 8, 8); wrap.Children.Add(chip); } panel.Children.Add(wrap);
         var start = Action("Assistent starten", OpenWizard, true, "wizard"); start.HorizontalAlignment = HorizontalAlignment.Left; start.Margin = new Thickness(0, 24, 0, 0); panel.Children.Add(start);
         var note = Text("Der Assistent ändert den Arbeitsbereich erst nach deiner Bestätigung. Zugangsdaten, Mods und Kartenreihenfolgen bleiben erhalten.", 13, muted: true); note.Margin = new Thickness(0, 24, 0, 0); panel.Children.Add(note);
-        return Card(panel, new Thickness(34));
+        var page = Column(); page.Children.Add(Card(panel, new Thickness(34)));
+        var quickPresets = Column(); quickPresets.Children.Add(Text("Oder mit einer Vorlage beginnen", 19, bold: true));
+        var presetIntro = Text("Acht Ausgangspunkte für unterschiedliche Spielstile. Vor der Übernahme siehst du jede Wertänderung.", 13, muted: true); presetIntro.Margin = new Thickness(0, 6, 0, 18); quickPresets.Children.Add(presetIntro);
+        int index = 0;
+        foreach (var preset in core.Call("presets").EnumerateArray())
+        {
+            int selected = index++;
+            var entry = new Grid { Margin = new Thickness(0, 0, 0, 11) };
+            entry.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); entry.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            var copy = Column(); copy.Children.Add(Text(preset.S("name"), 14, bold: true)); copy.Children.Add(Text(preset.S("description"), 12, muted: true)); entry.Children.Add(copy);
+            var open = Action("Ansehen", () => OpenPreset(selected, preset.S("name"))); Grid.SetColumn(open, 1); open.Margin = new Thickness(15, 0, 0, 0); entry.Children.Add(open); quickPresets.Children.Add(entry);
+        }
+        var presetsCard = Card(quickPresets); presetsCard.Margin = new Thickness(0, 18, 0, 0); page.Children.Add(presetsCard);
+        return Scroll(page);
+    }
+
+    private void OpenPreset(int index, string name)
+    {
+        var dialog = new PresetPreview(core, index, name, state.B("imported")) { Owner = this };
+        if (dialog.ShowDialog() == true && dialog.UpdatedState is { } result)
+        { state = result; ReadState(); RefreshProfiles(); Navigate("export"); Notice("Vorlage übernommen: " + name); }
     }
 
     private UIElement ProfilesPage()
@@ -73,10 +93,12 @@ public partial class MainWindow
         {
             var row = new Grid(); row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             var copy = Column(); copy.Children.Add(Text(item.Name, 15, bold: true)); copy.Children.Add(Text(item.Updated, 11, muted: true)); row.Children.Add(copy);
-            var buttons = Row(Action("Öffnen", () => { if (CanReplace()) Mutate("load", new { id = item.Id }); }), Action("Papierkorb", () => DeleteProfile(item)));
+            var buttons = Row(Action("Öffnen", () => { if (CanReplace()) Mutate("load", new { id = item.Id }); }), Action("Umbenennen", () => RenameProfile(item)), Action("Verlauf", () => RestoreHistory(item)), Action("Papierkorb", () => DeleteProfile(item)));
             Grid.SetColumn(buttons, 1); row.Children.Add(buttons);
             var card = Card(row, new Thickness(17)); card.Margin = new Thickness(0, 0, 0, 9); panel.Children.Add(card);
         }
+        var backups = Row(Action("Profil-JSON importieren", ImportProfile), Action("Profil-JSON exportieren", ExportProfile), Action("Papierkorb", RestoreTrash));
+        backups.Margin = new Thickness(8, 20, 0, 14); panel.Children.Add(backups);
         panel.Children.Add(Text("Profile liegen nur auf diesem Gerät. Bekannte Kennwortfelder werden beim Speichern entfernt; ein Serverexport kann sie enthalten.", 12, muted: true));
         return Scroll(panel);
     }
@@ -85,6 +107,48 @@ public partial class MainWindow
     {
         if (MessageBox.Show(this, $"Profil „{item.Name}“ in den Papierkorb verschieben?", "Profil löschen", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
         try { core.Call("deleteProfile", new { id = item.Id }); RefreshProfiles(); Navigate("profiles"); Notice("Profil in den Papierkorb verschoben"); } catch (Exception ex) { Error(ex); }
+    }
+
+    private void RenameProfile(ProfileItem item)
+    {
+        var prompt = new NamePrompt(item.Name) { Owner = this };
+        if (prompt.ShowDialog() == true) Mutate("renameProfile", new { id = item.Id, name = prompt.Value }, "profiles");
+    }
+    private void RestoreHistory(ProfileItem item)
+    {
+        try
+        {
+            var entries = core.Call("history", new { id = item.Id }).EnumerateArray().ToList();
+            if (entries.Count == 0) { MessageBox.Show(this, "Für dieses Profil gibt es noch keinen älteren Stand."); return; }
+            var picker = new BackupPicker("Versionsverlauf", entries) { Owner = this };
+            if (picker.ShowDialog() == true && picker.SelectedFile is { } file && CanReplace()) Mutate("restoreHistory", new { id = item.Id, file }, "profiles");
+        }
+        catch (Exception ex) { Error(ex); }
+    }
+
+    private void ImportProfile()
+    {
+        if (!CanReplace()) return;
+        var dialog = new OpenFileDialog { Title = "Profil-JSON importieren", Filter = "Profil-JSON (*.json)|*.json" };
+        if (dialog.ShowDialog(this) == true) Mutate("importProfile", new { path = dialog.FileName }, "profiles");
+    }
+    private void ExportProfile()
+    {
+        var dialog = new SaveFileDialog { Title = "Profil-JSON ohne bekannte Kennwortfelder exportieren", Filter = "Profil-JSON (*.json)|*.json", FileName = state.S("baseName") + "-profil.json" };
+        if (dialog.ShowDialog(this) != true) return;
+        try { core.Call("exportProfile", new { path = dialog.FileName }); Notice("Profil-JSON erstellt"); }
+        catch (Exception ex) { Error(ex); }
+    }
+    private void RestoreTrash()
+    {
+        try
+        {
+            var entries = core.Call("trash").EnumerateArray().ToList();
+            if (entries.Count == 0) { MessageBox.Show(this, "Der Papierkorb ist leer."); return; }
+            var picker = new BackupPicker("Papierkorb", entries) { Owner = this };
+            if (picker.ShowDialog() == true && picker.SelectedFile is { } file && CanReplace()) Mutate("restoreTrash", new { file }, "profiles");
+        }
+        catch (Exception ex) { Error(ex); }
     }
 
     private UIElement ExportPage()
@@ -116,8 +180,15 @@ public partial class MainWindow
     private UIElement HelpPage()
     {
         var panel = Column(); panel.Children.Add(Text("Hilfe & Updates", 25, bold: true));
-        var intro = Text("Kurze Wege zu Handbuch, Versionshinweisen und Projektseite.", 15, muted: true); intro.Margin = new Thickness(0, 7, 0, 26); panel.Children.Add(intro);
-        panel.Children.Add(Row(Action("Handbuch öffnen", OpenManual, true), Action("GitHub Releases", () => OpenUrl("https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases")), Action("Zumbyte", () => OpenUrl("https://www.zumbyte.de/"))));
+        var intro = Text("Kurze Wege zu Handbuch, Versionshinweisen und Projektseite.", 15, muted: true); intro.Margin = new Thickness(0, 7, 0, 23); panel.Children.Add(intro);
+        liveUpdate = Text(updateStatus, 14); liveUpdate.Margin = new Thickness(0, 0, 0, 14); panel.Children.Add(liveUpdate);
+        var updateButtons = Row(Action("Jetzt prüfen", () => _ = CheckUpdate(true), false, "refresh"));
+        if (updateState == "UPDATE_AVAILABLE") updateButtons.Children.Add(Action("Paket laden", () => _ = DownloadUpdate(), true));
+        if (updatePath is not null) updateButtons.Children.Add(Action("Geprüftes Paket öffnen", InstallUpdate, true));
+        panel.Children.Add(updateButtons);
+        if (updateNotes.Length > 0) { var notes = Text(updateNotes, 12, muted: true); notes.Margin = new Thickness(0, 13, 0, 0); panel.Children.Add(notes); }
+        var links = Row(Action("Handbuch öffnen", OpenManual), Action("GitHub Releases", () => OpenUrl("https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases")), Action("Zumbyte", () => OpenUrl("https://www.zumbyte.de/")));
+        links.Margin = new Thickness(0, 27, 0, 0); panel.Children.Add(links);
         var info = Text("PZ Server Architect 0.4.0 Preview · Windows WPF\nProfil- und Konfigurationsdaten bleiben lokal. Es gibt keinen Masterserver und keinen Konfigurations-Upload.\n\nTastatur: Strg+S speichern · Strg+F suchen · Strg+E exportieren · Strg+Z/Y rückgängig/wiederholen", 13, muted: true);
         info.Margin = new Thickness(0, 32, 0, 0); panel.Children.Add(info); return Card(panel, new Thickness(32));
     }
@@ -160,6 +231,48 @@ public partial class MainWindow
         new RawEditor("Handbuch", File.ReadAllText(path), true) { Owner = this }.ShowDialog();
     }
     private static void OpenUrl(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+
+    private async Task CheckUpdate(bool visible)
+    {
+        if (updateBusy) return; updateBusy = true;
+        updateStatus = "GitHub Releases werden geprüft …";
+        if (liveUpdate is not null) liveUpdate.Text = updateStatus;
+        try
+        {
+            var result = await Task.Run(() => core.Call("checkUpdate"));
+            updateState = result.S("state"); updateStatus = result.S("message");
+            updateNotes = result.S("notes"); if (updateNotes.Length > 5000) updateNotes = updateNotes[..5000] + " …";
+            updatePath = null;
+        }
+        catch { updateState = ""; updateStatus = "Updateprüfung derzeit nicht möglich. Die App bleibt nutzbar."; }
+        finally { updateBusy = false; if (liveUpdate is not null) liveUpdate.Text = updateStatus; if (visible && route == "about") Navigate("about"); }
+    }
+    private async Task DownloadUpdate()
+    {
+        if (updateBusy || updateState != "UPDATE_AVAILABLE") return; updateBusy = true;
+        updateStatus = "Update wird geladen und anhand der SHA-256-Prüfsumme geprüft …";
+        if (liveUpdate is not null) liveUpdate.Text = updateStatus;
+        try
+        {
+            var result = await Task.Run(() => core.Call("downloadUpdate"));
+            updatePath = result.S("path"); updateStatus = "Version " + result.S("version") + " wurde geprüft und ist bereit.";
+        }
+        catch { updatePath = null; updateStatus = "Download oder Prüfsumme fehlgeschlagen. Kein Paket wird installiert."; }
+        finally { updateBusy = false; if (route == "about") Navigate("about"); }
+    }
+    private void InstallUpdate()
+    {
+        if (updatePath is null) return;
+        if (state.B("dirty") && !SaveProfile()) return;
+        if (MessageBox.Show(this, "Das geprüfte Installationspaket mit Windows öffnen?", "Update installieren", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+        try
+        {
+            var file = core.Call("verifyUpdate").S("path");
+            Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
+            Notice("Installationspaket an Windows übergeben");
+        }
+        catch (Exception ex) { Error(ex); }
+    }
 
     private async Task RefreshServerStatus()
     {

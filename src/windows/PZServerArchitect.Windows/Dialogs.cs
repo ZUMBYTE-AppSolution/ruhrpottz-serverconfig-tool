@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -61,4 +62,91 @@ internal sealed class RawEditor : Window
         if (!readOnly) { var apply = DialogStyle.Button("Änderungen übernehmen", true); apply.Click += (_, _) => DialogResult = true; actions.Children.Add(apply); }
         Grid.SetRow(actions, 2); root.Children.Add(actions); Content = root;
     }
+}
+
+internal sealed class PresetPreview : Window
+{
+    private readonly CoreClient core;
+    private readonly int index;
+    private readonly CheckBox existing;
+    private readonly StackPanel changes;
+    public JsonElement? UpdatedState { get; private set; }
+    public PresetPreview(CoreClient core, int index, string name, bool imported)
+    {
+        this.core = core; this.index = index;
+        Title = "Vorlage prüfen · " + name; Width = 760; Height = 690; MinWidth = 610; MinHeight = 520;
+        WindowStartupLocation = WindowStartupLocation.CenterOwner; Background = DialogStyle.Color("#0D111B");
+        var root = new Grid { Margin = new Thickness(29) };
+        root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var head = new StackPanel(); head.Children.Add(DialogStyle.Label(name, 23));
+        head.Children.Add(DialogStyle.Label("Die Vorlage ändert den Arbeitsbereich erst nach deiner Bestätigung.", 13, true));
+        existing = new CheckBox { Content = "Nur bereits vorhandene Schlüssel ändern", IsChecked = imported, Foreground = DialogStyle.Color("#F2F5FC"), FontSize = 13, Margin = new Thickness(0, 15, 0, 14) };
+        existing.Checked += (_, _) => Render(); existing.Unchecked += (_, _) => Render(); head.Children.Add(existing); root.Children.Add(head);
+        changes = new StackPanel(); var scroll = new ScrollViewer { Content = changes, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        Grid.SetRow(scroll, 1); root.Children.Add(scroll);
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 15, 0, 0) };
+        var cancel = DialogStyle.Button("Abbrechen"); cancel.Click += (_, _) => DialogResult = false; buttons.Children.Add(cancel);
+        var apply = DialogStyle.Button("Als einen Schritt übernehmen", true); apply.Click += (_, _) =>
+        {
+            try { UpdatedState = core.Call("applyPreset", new { index, existingOnly = existing.IsChecked == true }); DialogResult = true; }
+            catch (Exception ex) { MessageBox.Show(this, ex.Message, "Vorlage", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        };
+        buttons.Children.Add(apply); Grid.SetRow(buttons, 2); root.Children.Add(buttons); Content = root; Render();
+    }
+    private void Render()
+    {
+        changes.Children.Clear();
+        try
+        {
+            var preview = core.Call("previewPreset", new { index, existingOnly = existing.IsChecked == true });
+            var list = preview.GetProperty("changes").EnumerateArray().ToList();
+            var count = DialogStyle.Label($"{list.Count} vorgeschlagene Änderungen", 16); count.Margin = new Thickness(0, 0, 0, 15); changes.Children.Add(count);
+            foreach (var item in list)
+            {
+                var row = new StackPanel { Margin = new Thickness(0, 0, 0, 12) };
+                row.Children.Add(DialogStyle.Label(item.S("title"), 14)); row.Children.Add(DialogStyle.Label(item.S("before") + "  →  " + item.S("after"), 12, true)); changes.Children.Add(row);
+            }
+        }
+        catch (Exception ex) { changes.Children.Add(DialogStyle.Label(ex.Message, 14)); }
+    }
+}
+
+internal sealed class NamePrompt : Window
+{
+    private readonly TextBox input;
+    public string Value => input.Text.Trim();
+    public NamePrompt(string name)
+    {
+        Title = "Profil umbenennen"; Width = 460; Height = 250; ResizeMode = ResizeMode.NoResize;
+        WindowStartupLocation = WindowStartupLocation.CenterOwner; Background = DialogStyle.Color("#111625");
+        var panel = new StackPanel { Margin = new Thickness(28) };
+        panel.Children.Add(DialogStyle.Label("Neuer Profilname", 20));
+        input = new TextBox { Text = name, Margin = new Thickness(0, 17, 0, 20) }; panel.Children.Add(input);
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        var cancel = DialogStyle.Button("Abbrechen"); cancel.Click += (_, _) => DialogResult = false; buttons.Children.Add(cancel);
+        var save = DialogStyle.Button("Umbenennen", true); save.Click += (_, _) => { if (Value.Length is > 0 and <= 160) DialogResult = true; else MessageBox.Show(this, "Bitte einen Namen mit höchstens 160 Zeichen eingeben."); }; buttons.Children.Add(save);
+        panel.Children.Add(buttons); Content = panel; Loaded += (_, _) => { input.Focus(); input.SelectAll(); };
+    }
+}
+
+internal sealed class BackupPicker : Window
+{
+    private readonly ListBox list;
+    public string? SelectedFile => (list.SelectedItem as BackupItem)?.File;
+    public BackupPicker(string title, List<JsonElement> entries)
+    {
+        Title = title; Width = 620; Height = 530; WindowStartupLocation = WindowStartupLocation.CenterOwner; Background = DialogStyle.Color("#111625");
+        var root = new Grid { Margin = new Thickness(28) };
+        root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var head = DialogStyle.Label(title + " · Wiederherstellen", 22); head.Margin = new Thickness(0, 0, 0, 18); root.Children.Add(head);
+        list = new ListBox(); foreach (var entry in entries) list.Items.Add(new BackupItem(entry.S("file"), entry.S("name"), entry.S("updated")));
+        if (list.Items.Count > 0) list.SelectedIndex = 0; Grid.SetRow(list, 1); root.Children.Add(list);
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 15, 0, 0) };
+        var cancel = DialogStyle.Button("Abbrechen"); cancel.Click += (_, _) => DialogResult = false; buttons.Children.Add(cancel);
+        var restore = DialogStyle.Button("Als neue Kopie wiederherstellen", true); restore.Click += (_, _) => { if (SelectedFile is not null) DialogResult = true; }; buttons.Children.Add(restore);
+        Grid.SetRow(buttons, 2); root.Children.Add(buttons); Content = root;
+    }
+    private sealed record BackupItem(string File, string Name, string Updated) { public override string ToString() => Name + "  ·  " + Updated; }
 }

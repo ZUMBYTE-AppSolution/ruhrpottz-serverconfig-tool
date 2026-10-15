@@ -25,6 +25,12 @@ public partial class MainWindow : Window
     private bool statusBusy;
     private string serverStatus = "Status wird geladen …";
     private TextBlock? liveStatus;
+    private TextBlock? liveUpdate;
+    private string updateStatus = "Noch nicht geprüft";
+    private string updateState = "";
+    private string updateNotes = "";
+    private string? updatePath;
+    private bool updateBusy;
 
     public MainWindow()
     {
@@ -36,7 +42,7 @@ public partial class MainWindow : Window
         Navigate(initial is null ? "home" : initial[7..]);
         statusTimer.Tick += async (_, _) => await RefreshServerStatus();
         if (Environment.GetCommandLineArgs().Contains("--smoke")) Loaded += (_, _) => Close();
-        else { statusTimer.Start(); _ = RefreshServerStatus(); }
+        else { statusTimer.Start(); _ = RefreshServerStatus(); Loaded += async (_, _) => await CheckUpdate(false); }
         PreviewKeyDown += (_, e) =>
         {
             bool control = (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) != 0;

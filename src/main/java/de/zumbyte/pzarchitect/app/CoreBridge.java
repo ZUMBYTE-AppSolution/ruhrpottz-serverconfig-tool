@@ -1,6 +1,7 @@
 package de.zumbyte.pzarchitect.app;
 
 import de.zumbyte.pzarchitect.update.Json;
+import de.zumbyte.pzarchitect.update.UpdateClient;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -11,11 +12,15 @@ import java.util.*;
 public final class CoreBridge {
     private final Catalog catalog;
     private final ProfileStore store;
+    private final UpdateClient updates;
+    private UpdateClient.Candidate updateCandidate;
+    private UpdateClient.Downloaded downloadedUpdate;
     private Workspace workspace = new Workspace();
 
     private CoreBridge() throws IOException {
         catalog = new Catalog();
         store = new ProfileStore(ProfileStore.defaultRoot());
+        updates = new UpdateClient(UpdateClient.Config.github(App.VERSION, store.root.resolve("updates")));
     }
 
     public static void main(String[] args) throws Exception {
@@ -57,6 +62,17 @@ public final class CoreBridge {
                 workspace = store.load(profilePath(q));
                 return state();
             }
+            case "importProfile": {
+                workspace = store.load(Path.of(Json.string(q, "path")));
+                workspace.id = UUID.randomUUID().toString(); workspace.diskHash = null; workspace.dirty = true;
+                return state();
+            }
+            case "exportProfile": {
+                Path target = Path.of(Json.string(q, "path"));
+                if (Files.exists(target)) throw new IOException("Zieldatei existiert bereits");
+                Workspace.atomic(target, Json.write(workspace.snapshot(true)));
+                return Map.of("path", target.toString());
+            }
             case "save": {
                 workspace.name = Json.string(q, "name").strip();
                 workspace.baseName = Json.string(q, "baseName").strip();
@@ -75,7 +91,32 @@ public final class CoreBridge {
                 store.save(workspace);
                 return state();
             }
-            case "deleteProfile": { store.delete(profilePath(q)); return profiles(); }
+            case "deleteProfile": {
+                Path file = profilePath(q);
+                store.delete(file);
+                if (workspace.id.equals(Json.string(q, "id"))) {
+                    workspace.id = UUID.randomUUID().toString(); workspace.diskHash = null; workspace.dirty = true;
+                }
+                return profiles();
+            }
+            case "renameProfile": {
+                Workspace renamed = store.load(profilePath(q));
+                renamed.name = Json.string(q, "name").strip();
+                if (renamed.name.isEmpty() || renamed.name.length() > 160) throw new IllegalArgumentException("Profilname ist ungültig");
+                store.save(renamed);
+                if (workspace.id.equals(renamed.id)) { workspace.name = renamed.name; workspace.diskHash = renamed.diskHash; }
+                return state();
+            }
+            case "trash": { return entries(store.list(store.trash)); }
+            case "restoreTrash": { workspace = store.restore(backupPath(store.trash, q)); return state(); }
+            case "history": {
+                Path dir = store.history.resolve(UUID.fromString(Json.string(q, "id")).toString());
+                return Files.isDirectory(dir) ? entries(store.list(dir)) : List.of();
+            }
+            case "restoreHistory": {
+                Path dir = store.history.resolve(UUID.fromString(Json.string(q, "id")).toString());
+                workspace = store.restore(backupPath(dir, q)); return state();
+            }
             case "validate": { return review(); }
             case "export": {
                 workspace.exportZip(Path.of(Json.string(q, "path")), catalog);
@@ -87,8 +128,29 @@ public final class CoreBridge {
                 return state();
             }
             case "presets": { return Presets.ALL.stream().map(p -> Map.of("name", p.name(), "description", p.description())).toList(); }
+            case "previewPreset": { return preset(q, false); }
+            case "applyPreset": { return preset(q, true); }
             case "previewWizard": { return wizard(q, false); }
             case "applyWizard": { return wizard(q, true); }
+            case "checkUpdate": {
+                UpdateClient.Check result = updates.check();
+                updateCandidate = result.candidate(); downloadedUpdate = null;
+                Map<String,Object> reply = new LinkedHashMap<>();
+                reply.put("state", result.state().name()); reply.put("message", result.message());
+                reply.put("version", updateCandidate == null ? "" : updateCandidate.version().text());
+                reply.put("notes", updateCandidate == null ? "" : updateCandidate.notes());
+                return reply;
+            }
+            case "downloadUpdate": {
+                if (updateCandidate == null) throw new IllegalStateException("Zuerst auf Updates prüfen");
+                downloadedUpdate = updates.download(updateCandidate, count -> {});
+                return Map.of("path", downloadedUpdate.file().toString(), "version", updateCandidate.version().text());
+            }
+            case "verifyUpdate": {
+                if (downloadedUpdate == null) throw new IllegalStateException("Noch kein geprüftes Update geladen");
+                updates.verifyPackage(downloadedUpdate.candidate(), downloadedUpdate.file());
+                return Map.of("path", downloadedUpdate.file().toString());
+            }
             default: throw new IllegalArgumentException("Unbekannter Befehl");
         }
     }
@@ -113,6 +175,20 @@ public final class CoreBridge {
             entries.add(Map.of("id", filename.substring(0, 36), "name", e.name(), "updated", e.updated(), "error", e.error()));
         }
         return entries;
+    }
+
+    private static Object entries(List<ProfileStore.Entry> source) {
+        List<Object> result = new ArrayList<>();
+        for (ProfileStore.Entry entry : source) result.add(Map.of(
+            "file", entry.file().getFileName().toString(), "name", entry.name(),
+            "updated", entry.updated(), "error", entry.error()));
+        return result;
+    }
+
+    private static Path backupPath(Path directory, Map<String,Object> q) {
+        String file = Json.string(q, "file");
+        if (!file.matches("[0-9]{10,17}-[0-9a-fA-F-]{36}\\.json")) throw new IllegalArgumentException("Ungültiger Sicherungspfad");
+        return directory.resolve(file);
     }
 
     private Object state() {
@@ -151,6 +227,29 @@ public final class CoreBridge {
         return Map.of("issues", issues, "diff", workspace.diff(catalog));
     }
 
+    private Object preset(Map<String,Object> q, boolean apply) {
+        int index = Math.toIntExact(Json.integer(q, "index"));
+        if (index < 0 || index >= Presets.ALL.size()) throw new IllegalArgumentException("Vorlage nicht gefunden");
+        Presets.Preset preset = Presets.ALL.get(index);
+        boolean existingOnly = Boolean.TRUE.equals(q.get("existingOnly"));
+        if (apply) { workspace.apply(preset.values(), catalog, existingOnly); return state(); }
+        return preview(preset.name(), preset.values(), existingOnly);
+    }
+
+    private Object preview(String presetName, Map<String,Object> values, boolean existingOnly) {
+        List<Object> result = new ArrayList<>();
+        for (var e : values.entrySet()) {
+            Catalog.Setting s = catalog.settings.get(e.getKey());
+            if (s == null) continue;
+            ConfigDocument.Field old = workspace.document(s.scope).fields.get(s.id);
+            if (existingOnly && old == null) continue;
+            result.add(Map.of("title", s.title, "key", s.key,
+                "before", old == null ? "Nicht gesetzt" : Catalog.display(old.value()),
+                "after", Catalog.display(e.getValue())));
+        }
+        return Map.of("preset", presetName, "changes", result);
+    }
+
     private Object wizard(Map<String,Object> q, boolean apply) {
         List<?> selections = (List<?>)q.get("choices");
         if (selections == null || selections.size() != 9) throw new IllegalArgumentException("Neun Assistenten-Schritte erforderlich");
@@ -176,14 +275,6 @@ public final class CoreBridge {
         if(c[8]==3){for(String k:List.of("DayNightCycle","ClimateCycle","FogCycle"))Presets.put(m,"lua",k,2);}
         boolean existingOnly = Boolean.TRUE.equals(q.get("existingOnly"));
         if (apply) { workspace.apply(m,catalog,existingOnly); return state(); }
-        List<Object> preview = new ArrayList<>();
-        for (var e:m.entrySet()) {
-            Catalog.Setting s=catalog.settings.get(e.getKey());
-            if(s==null)continue;
-            ConfigDocument.Field old=workspace.document(s.scope).fields.get(s.id);
-            if(existingOnly&&old==null)continue;
-            preview.add(Map.of("title",s.title,"key",s.key,"before",old==null?"Nicht gesetzt":Catalog.display(old.value()),"after",Catalog.display(e.getValue())));
-        }
-        return Map.of("preset",preset.name(),"changes",preview);
+        return preview(preset.name(), m, existingOnly);
     }
 }

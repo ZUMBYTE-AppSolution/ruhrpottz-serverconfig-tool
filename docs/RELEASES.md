@@ -1,5 +1,12 @@
 # Desktop-Releases
 
+Das öffentliche Repository führt freigegebene Stände auf `main` und stellt
+versionierte Pakete über [GitHub Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases) bereit.
+Unveröffentlichte Entwicklung liegt auf `test` in einem separaten privaten
+Repository. GitHub kennt keine privaten Branches innerhalb eines öffentlichen
+Repositorys. Das [v0.3.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0)
+ist tatsächlich veröffentlicht.
+
 Die App-Version ist 0.3.0 Preview. Die vorhandene GitHub-only-Updatebibliothek ist
 Version 0.2.0; diese beiden Versionen werden nicht gleichgesetzt.
 
@@ -14,6 +21,11 @@ sind und alle acht Pakete samt SHA-256-Dateien vorliegen und nachgerechnet wurde
 veröffentlicht `desktop-release.yml` ein öffentliches **Prerelease**. Der
 Release-Job akzeptiert nur einen Commit, der in `main` enthalten ist, und
 überschreibt kein vorhandenes Release.
+
+Für den aktuellen v0.3.0-Tag ist dieser Ablauf erfolgreich abgeschlossen;
+die acht Pakete liegen auf der Release-Seite. Der erneute Plattformbau wurde
+auch unter [Actions](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions)
+nachgewiesen.
 
 Der Updater erwartet für stabile Versionen taggebundene Assets:
 `PZ-Server-Architect-VERSION-windows-x64.msi`,

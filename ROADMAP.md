@@ -8,8 +8,8 @@ validierter Quelltexteditor, neues Export-ZIP, GitHub-only-Updater und Server-Ti
 
 ## Vor einer stabilen Freigabe
 
-Windows-/macOS-Builds und GUI-Start auf Zielsystemen ausführen, Pakete und
-Installationsabläufe prüfen, Datenhaltung beim Update testen, Katalogwerte für
+Windows-/macOS-Installer tatsächlich installieren und die GUI dort bedienen,
+Datenhaltung beim Update testen, Katalogwerte für
 freigegebene Spielbuilds verifizieren und echte Project-Zomboid-/Modtests durchführen.
 Der Windows-Updater benötigt ein freigegebenes MSI-Paket statt der portablen ZIP.
 

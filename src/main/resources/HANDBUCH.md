@@ -187,9 +187,9 @@ Strg/Cmd+S Speichern, Strg/Cmd+F Suchen, Strg/Cmd+E Export,
 Strg/Cmd+Z Rückgängig, Strg/Cmd+Y Wiederholen.
 UI-Größe 90/100/110/125 Prozent gilt nach App-Neustart.
 
-Die Preview ist unter Linux kompiliert und als echtes Swing-Fenster geprüft.
-Die mitgelieferten Windows-/macOS-Workflows sind noch nicht ausgeführt. Ein
-Spieltest mit Project Zomboid, deiner Modkombination und AMP steht aus.
-Alle Testzahlen und Details stehen im beiliegenden Prüfbericht.
+Die Preview wurde auf Windows, macOS und Linux in GitHub Actions gebaut.
+Unter Linux wurde die Swing-Oberfläche als echtes Fenster geprüft. Die
+Installerinstallation und ein Spieltest mit Project Zomboid, deiner
+Modkombination und AMP stehen aus. Aktuelle Details: docs/TESTSTATUS.md.
 
 Unabhängiges Werkzeug, nicht mit The Indie Stone verbunden.

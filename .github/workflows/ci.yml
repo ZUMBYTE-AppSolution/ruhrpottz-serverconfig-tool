@@ -1,7 +1,7 @@
-name: Desktop preview checks and packages
+name: Desktop builds and checks
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main, test]
   pull_request:
   workflow_dispatch:
   workflow_call:
@@ -55,7 +55,7 @@ jobs:
           name: desktop-${{ matrix.os }}
           path: |
             build/dist/*
-            build/PZ-Server-Architect-0.3.0.jar
+            build/PZ-Server-Architect-*.jar
             build/test-report.txt
             build/screenshots/*.png
           if-no-files-found: error

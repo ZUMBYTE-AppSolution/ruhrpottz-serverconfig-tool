@@ -28,6 +28,7 @@ def checksum(file: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--installer', action='store_true')
+    parser.add_argument('--msix', action='store_true', help='Also create an unsigned Windows development MSIX')
     args = parser.parse_args()
     system = {'Windows': 'windows', 'Darwin': 'macos', 'Linux': 'linux'}.get(platform.system())
     arch = {'AMD64': 'x64', 'amd64': 'x64', 'x86_64': 'x64', 'aarch64': 'arm64', 'arm64': 'arm64'}.get(platform.machine())
@@ -53,7 +54,7 @@ def main() -> None:
     image_dir = out / 'image'
     icon = ROOT / 'src/main/resources/assets' / ('icon.ico' if system == 'windows' else 'icon.icns' if system == 'macos' else 'icon.png')
     # Apple requires the first component of CFBundleShortVersionString to be positive.
-    # Keep the product/release version at 0.3.0; this value is packaging metadata only.
+    # Apple requires a positive first version component; the release version remains unchanged.
     package_version = '1.' + VERSION.split('.', 1)[1] if system == 'macos' and VERSION.startswith('0.') else VERSION
     common = ['--name', APP_NAME, '--app-version', package_version, '--vendor', 'Zumbyte - Appsolution',
               '--copyright', 'Copyright by Zumbyte - Appsolution | www.zumbyte.de',
@@ -110,6 +111,9 @@ def main() -> None:
             raise RuntimeError('Installer destination already exists.')
         shutil.copy2(results[0], destination)
         checksum(destination)
+    if system == 'windows' and arch == 'x64' and (args.installer or args.msix):
+        from msix import create
+        checksum(create(image, out))
     print('Created native packages for ' + target + '. No installer was executed.')
 
 if __name__ == '__main__':

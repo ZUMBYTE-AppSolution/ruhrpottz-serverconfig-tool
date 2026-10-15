@@ -1,76 +1,54 @@
 # Changelog
 
-## 0.3.0 Preview-Paketierung · 2026-10-15
+Änderungen an PZ Server Architect, nach Versionen geordnet. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
-- Vorhandene Swing-App und Graphit-Lila-Design unverändert als Buildquelle beibehalten.
-- macOS-Paketmetadaten an die Apple-Versionsregel angepasst; App-Version und Release-Tag bleiben 0.3.0.
-- Windows-MSI mit WiX, macOS-DMG und Linux-DEB sowie portable Pakete im erfolgreichen [Actions-Lauf 38703376018](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut.
-- Releasekette prüft die vollständige Plattformmatrix und alle SHA-256-Werte vor einem öffentlichen Prerelease.
-- Der stabile Updater ignoriert weiterhin Preview-Releases; manuelle Downloads erfolgen über GitHub.
+## [Unreleased]
 
-## Repository-Vorbereitung · 2026-10-14
+### Offen
 
-### Dokumentation und Präsentation
-- Projektstartseite im Aufbau von VeliShell mit PZ-App-Icon, Preview-Kennzeichnung, echten UI-Aufnahmen und vollständiger Funktions-/Installationsbeschreibung.
-- Support, Entwicklungsleitfaden, Roadmap, Pull-Request-Vorlage und Issue-Vorlagen ergänzt.
-- Veraltete Aussage zur fehlenden GUI in SECURITY.md korrigiert; die tatsächliche Swing-Umsetzung ausdrücklich dokumentiert.
-- Release-Workflow auf eine verifizierte Action-Version festgelegt.
-- App-Code, Katalog, Graphit-Lila-Theme und Icons unverändert aus dem gebauten 0.3.0-Stand übernommen.
+- Microsoft-Store-Identität reservieren und das MSIX mit dieser Identität für die Store-Abgabe erstellen.
+- Code-Signing und macOS-Notarisierung für direkte Verteilung vorbereiten.
+- Vollständige Installation und Updateübernahme auf allen Zielsystemen sowie Spieltest mit konkreter PZ-Version und Mods nachweisen.
 
-### Veröffentlichungsstatus
-- Lokal commitfähiger beziehungsweise committeter Stand; keine Behauptung eines erfolgreichen Pushs.
-- Ein Git-Commit erzeugt kein öffentliches Release. Neue GitHub-CI und native Plattformtests sind erst nach dem Push beziehungsweise ihren tatsächlichen Läufen belegt.
+## [0.4.0] - 2026-10-15 · privater Teststand
 
-## 0.3.0 Preview · 2026-10-14
+### Hinzugefügt
 
-### Neue Desktop-App
-- Echte Swing-Oberfläche im vorhandenen Graphit-Lila-Design mit eingebundenem App-Icon.
-- 360 Katalogeinträge, zusätzlich importierte Modfelder, Werte-Hilfen und Originalkommentare.
-- Toggle-Switches für echte Ein/Aus-Werte, Dropdowns und validierte Zahlen/Textfelder.
-- Neun Fragen im Quick Start, acht neutrale Vorlagen und Änderungsvorschau.
-- Lokale Profile, zehn Wiederherstellungspunkte, Papierkorb, JSON-Import/-Export und Undo/Redo.
-- Datentabellenparser ohne Lua-Ausführung; INI/Lua-Kommentare und Reihenfolgen erhalten.
-- Maskierter Originalvergleich, validierter Quelltexteditor und neues Export-ZIP.
-- GitHub-only-Updater tatsächlich mit der Startlogik und Updateansicht verbunden.
-- Separater RuhrpottZ-Hinweis und manueller Parser für öffentliche Serverlisten-Daten.
-- Java-Ausgabe, plattformeigene jpackage-Buildkette, Linux-x64-Pakete und Handbuch.
-
-### Korrekturen
-- Fehlende Werte von false/0 unterschieden; Dropdown-Zustand entfernt Schlüssel tatsächlich.
-- Übernahme ungültiger ausstehender Eingaben beim Seitenwechsel verhindert.
-- Bewusstes Leeren einer redigierten Kennworteingabe entsperrt den Export.
-- Positive Populationsvorlagen lösen vorherige zivile Populations-/Migrationssperren.
-- Vorlagen behalten keine künstliche RuhrpottZ-Identität oder Serverzugangsdaten.
-
-### Prüfungen und Liefergrenzen
-- Java 21 mit -Xlint:all -Werror kompiliert; 941 Editor-/Profil- und 128 Updater-Assertions.
-- 31 GUI-Prüfungen mit einem tatsächlich geöffneten Swing-Fenster unter Linux/Xvfb.
-- Linux-Paket gebaut, Java-Plattformstarter enthalten; Windows/macOS noch nicht ausgeführt.
-- Kein neuer GitHub-Commit, CI-Lauf oder Release durch diesen lokalen Entwicklungsschritt.
-- Kein vollständiger Live-Update-/Installerzyklus oder Project-Zomboid-/AMP-Spieltest.
-
-## Unreleased: Updater-SDK 0.2.0
+- Windows-MSIX-Build mit gebündelter Laufzeit, Manifest und App-Grafiken als **unsigniertes Entwicklungspaket**.
+- Automatische Plattformmatrix für `main` und den privaten Branch `test`; Release-Workflow für versionierte Tags und vollständige Prüfsummenprüfung.
+- Direkte Windows-Downloadwege und aktueller Release-Status auf der Projektstartseite.
 
 ### Geändert
-- Auf ausdrücklichen Wunsch vollständig auf GitHub Releases umgestellt.
-- Masterserver-Adapter, Schlüsselkonfiguration, Offline-Manifest-Signierer und Integrationsvertrag entfernt.
-- `Config` und `Candidate` auf GitHub-only vereinfacht; ehemalige Masterserver-CLI-Argumente entfernt. Dies ändert die SDK-Schnittstelle gegenüber 0.1.0.
-- GitHub-Abfragelimits werden mit Retry-After beziehungsweise Reset-Zeit behandelt. Weitere Prüfungen desselben Clients warten bis dahin; keine automatische Retry-Schleife.
-- Release-Pagination bis fünf Seiten ergänzt. Link-Header können keine fremde Download-/API-Quelle einschleusen. Bei einer unvollständigen Prüfung bleibt der Versionsstand unbekannt.
-- GitHub-API-Metadaten und Weiterleitungen auf das feste Repository eingeschränkt.
-- Dokumentation und SDK-Draft-Workflow aktualisiert. Graphit-Lila-Design, PZ-App-Icon und Konfigurator-Funktionskonzept unverändert.
+
+- Übersicht mit klaren Einstiegsaktionen für Import, Quick Start und Einstellungen.
+- Kompakte Navigation; alle 17 Einstellungsbereiche sind jetzt im Editor auswählbar.
+- Größere Typografie, mehr Abstand, gerundete Karten sowie lila Buttons mit Glow bei Fokus und Berührung.
+- Öffentliche und unveröffentlichte Arbeit auf zwei Repositorys verteilt: `main` öffentlich, `test` privat.
 
 ### Geprüft
-- Java-21-Kompilierung mit `-Xlint:all -Werror` und 128 lokale Offline-Assertions bestanden.
-- CI-Matrix bleibt für Windows, macOS und Linux eingerichtet; Linux erhält zusätzlich eine echte öffentliche Metadatenabfrage ohne Download.
-- Ergebnisse dieser neuen CI-Läufe sind unabhängig von den bereits erfolgreichen 0.1.0-Läufen zu prüfen.
 
-### Noch offen
-- JavaFX-Konfigurator, Editor, Katalogmigration, Profile, Assistent und Servermonitor.
-- Native Installer, Betriebssystem-Signierung und vollständiger Live-Update-/Installationstest.
+- Java 21 kompiliert; 128 Updater- und 941 App-Prüfungen lokal bestanden.
+- 32 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden.
+- Windows x64 als portables Paket und MSIX-Testpaket lokal gebaut; die native App beantwortete `--version`.
 
-## Updater-SDK 0.1.0: ursprüngliche Entwicklungsgrundlage
+## [0.3.0] - 2026-10-15 · öffentliches Preview-Release
 
-Repositorygebundene GitHub-Releaseprüfung, Downloadprüfung, asynchroner Startcontroller und Dokumentation. Damals 110 lokal bestandene Offline-Assertions sowie erfolgreiche Windows-/macOS-/Linux-CI. Der damalige optionale Masterserver-Entwurf ist durch die GitHub-only-Entscheidung vollständig abgelöst.
+### Hinzugefügt
 
-Kein öffentliches App-Release durch diese SDK-Änderung.
+- Bedienbare Java-Swing-App mit 360 Katalogeinträgen, Quick Start, acht Vorlagen, Profilen, Import, Prüfung und Export.
+- GitHub-only-Updater ohne Masterserver; Plattformpakete für Windows x64, macOS Intel/Apple Silicon und Linux x64.
+- Versionierter [GitHub-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) mit MSI/ZIP, DMG/ZIP, DEB/TAR.GZ und SHA-256-Dateien.
+
+### Geprüft
+
+- Vier [GitHub-Actions-Jobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) mit Java-Build und Paketierung erfolgreich.
+- Paketinstallationen und der vollständige Live-Updatezyklus waren dabei nicht Teil des Nachweises.
+
+## [0.2.0] - 2026-10-14 · Updater-Grundlage
+
+- Updatequelle auf GitHub Releases begrenzt; Masterserver-Adapter entfernt.
+- Paket- und Versionsprüfung, Prüfsummen, Abfragelimits und sichere GitHub-Weiterleitungen ergänzt.
+
+## [0.1.0] - ursprüngliche SDK-Grundlage
+
+- Erste repositorygebundene Release-Prüfung und Offline-Tests des Updaters.

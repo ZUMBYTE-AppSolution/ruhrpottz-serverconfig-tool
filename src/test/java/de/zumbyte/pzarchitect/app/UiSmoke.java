@@ -16,6 +16,7 @@ public final class UiSmoke {
         try{
             SwingUtilities.invokeAndWait(()->{try{app=new App(true);app.setLocation(20,20);app.setVisible(true);}catch(Exception ex){throw new RuntimeException(ex);}});Robot robot=new Robot();robot.setAutoDelay(120);robot.waitForIdle();Thread.sleep(700);
             capture(robot,out,"01-uebersicht");
+            SwingUtilities.invokeAndWait(()->{JScrollPane home=children(app).stream().filter(c->c instanceof JScrollPane).map(c->(JScrollPane)c).findFirst().orElseThrow();ok(home.getViewport().getViewPosition().y==0,"home heading starts visible");});
             for(String route:new String[]{"all","rp","wizard","profiles","presets","export","server","about"}){SwingUtilities.invokeAndWait(()->app.navigate(route));robot.waitForIdle();Thread.sleep(250);ok(app.isShowing(),"page "+route);capture(robot,out,"page-"+route);}
             SwingUtilities.invokeAndWait(()->app.navigate("rp"));robot.waitForIdle();SwingUtilities.invokeAndWait(()->{
                 Theme.Toggle toggle=(Theme.Toggle)children(app).stream().filter(c->c instanceof Theme.Toggle).findFirst().orElseThrow();ok(toggle.missing,"missing distinct from false");toggle.doClick();ok(app.workspace.is("ini","PVP",true),"UI toggle sets true");

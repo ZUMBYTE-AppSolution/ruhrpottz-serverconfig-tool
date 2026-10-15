@@ -13,9 +13,9 @@
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-lesen-6d28d9"></a>
 </p>
 
-> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die neu gestaltete v0.4.0 ist ein privater Teststand zur Begutachtung. Die App verändert keinen laufenden Server.
+> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die native Windows-Oberfläche v0.4.0 liegt derzeit im privaten Teststand. Auf macOS und Linux nutzt v0.4.0 weiterhin die Java-Oberfläche. Die App verändert keinen laufenden Server.
 
-![Übersicht der Desktop-App](docs/images/overview.png)
+![Native Windows-Übersicht im privaten v0.4.0-Teststand](docs/images/wpf-overview.png)
 
 ## Was du damit machen kannst
 
@@ -23,7 +23,7 @@
 |---|---|
 | **Schnell starten** | Eigenes Assistentenfenster mit neun erklärten Schritten, Zurück/Weiter und Änderungsvorschau. |
 | **Werte verstehen** | 360 erklärte Katalogeinträge in 17 Bereichen sowie importierte Modfelder. |
-| **Gezielt bearbeiten** | Suche, Bereichsauswahl, Favoriten, passende Schalter und Auswahlfelder, Undo und Redo. |
+| **Gezielt bearbeiten** | Suche, Themenauswahl, passende Eingaben und Auswahlfelder, Undo und Redo. |
 | **Profile behalten** | Oben direkt wechseln oder neu anlegen; lokal speichern, kopieren, umbenennen, wiederherstellen und als JSON übertragen. |
 | **Dateien sicher übernehmen** | INI und Sandbox-Lua importieren, prüfen und als neues ZIP exportieren. |
 | **Updates finden** | GitHub-Releases prüfen und passende Pakete nach Prüfsummenvergleich laden. |
@@ -31,22 +31,20 @@
 
 Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkonfiguration. Der RuhrpottZ-Eintrag liest eine öffentliche Serverliste und bleibt getrennt von deinen Profilen.
 
-![RuhrpottZ mit Serverstatus und Discord-Button](docs/images/community.png)
+![RuhrpottZ-Livestatus in der nativen Windows-App](docs/images/wpf-community.png)
 
 ## Installation
 
-1. Lade das passende Paket von den [Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
+1. Lade das passende öffentliche Paket von den [Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
 2. Bei einem portablen Paket: **vollständig entpacken**, dann den enthaltenen App-Starter öffnen. Die Java-Laufzeit ist enthalten.
 3. Importiere dein zusammengehöriges `.ini`- und `_SandboxVars.lua`-Dateipaar oder beginne mit Quick Start.
 4. Prüfe die Änderungen und exportiere ein neues ZIP. Übernimm es erst nach einem Backup und einem Test mit deinem Spielbuild und deinen Mods.
 
-Das MSIX-Testpaket aus dem Entwicklungsbuild ist derzeit **nicht signiert** und verwendet eine Entwicklungsidentität. Für eine Store-Abgabe fehlen noch die Reservierung und Paketidentität aus Microsoft Partner Center. Das Windows-ZIP ist sofort startbar; der MSI-Installer des öffentlichen v0.3.0-Releases ist ebenfalls verfügbar. [MSIX-Stand](docs/RELEASES.md)
+Das MSIX-Testpaket aus dem Entwicklungsbuild ist derzeit **nicht signiert** und verwendet eine Entwicklungsidentität. Für eine Store-Abgabe fehlen noch die Reservierung und Paketidentität aus Microsoft Partner Center. Zum Ausprobieren der nativen v0.4.0-Windows-App das private Test-ZIP vollständig entpacken und `PZServerArchitect.exe` starten; der MSI-Installer des öffentlichen v0.3.0-Releases bleibt verfügbar. [MSIX-Stand](docs/RELEASES.md)
 
-![Einstellungen mit Bereichsauswahl](docs/images/settings.png)
+![Native Windows-Einstellungen mit Themenauswahl und Suche](docs/images/wpf-settings.png)
 
-![Aufklappbare Einstellungsbereiche](docs/images/category.png)
-
-![Quick Start als geführtes Fenster](docs/images/wizard.png)
+![Quick Start als geführtes WPF-Fenster](docs/images/wpf-wizard.png)
 
 ## Hinweise zu deinen Daten
 
@@ -56,13 +54,14 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Die neu gestaltete v0.4.0-Oberfläche und das MSIX-Testpaket haben den [privaten Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38716042142) bestanden; alle neun Pakete dieses Laufs wurden anhand ihrer SHA-256-Dateien überprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Für v0.4.0 wurde die Windows-Oberfläche als WPF-App neu umgesetzt und lokal als portables ZIP und MSIX-Testpaket gebaut. Der [neue private Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38721714604) war auf allen vier Plattformen erfolgreich; alle neun Pakete wurden anhand ihrer SHA-256-Dateien geprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 
 ```sh
 python tools/build.py
-python tools/package.py --installer
+python tools/package_wpf.py --installer  # Windows mit .NET 10 und WiX
+python tools/package.py --installer      # macOS oder Linux
 ```
 
 Die Pakete werden jeweils auf ihrem Zielbetriebssystem erstellt. GitHub Actions baut Windows, macOS und Linux automatisch; ein Versionstag auf `main` erstellt erst nach vollständiger Paket- und SHA-256-Prüfung ein Release. Der private Entwicklungsstand liegt in einem separaten Repository mit Branch `test`, weil GitHub keine privaten Branches innerhalb eines öffentlichen Repositorys anbietet. [Release-Ablauf](docs/RELEASES.md) · [Mitwirken](CONTRIBUTING.md)

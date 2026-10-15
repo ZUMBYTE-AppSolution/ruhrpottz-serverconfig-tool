@@ -15,26 +15,28 @@
 ### Hinzugefügt
 
 - Windows-MSIX-Build mit gebündelter Laufzeit, Manifest und App-Grafiken als **unsigniertes Entwicklungspaket**.
+- Native Windows-App mit WPF und lokal angebundener Java-Konfigurationslogik; macOS und Linux verwenden weiter die Java-Oberfläche.
 - Automatische Plattformmatrix für `main` und den privaten Branch `test`; Release-Workflow für versionierte Tags und vollständige Prüfsummenprüfung.
 - Direkte Windows-Downloadwege und aktueller Release-Status auf der Projektstartseite.
 
 ### Geändert
 
 - Lesbare Windows-Systemschrift, höherer Textkontrast und ein durchgehend dunkles Oberflächenlayout.
-- Seitenleiste mit lokal gebündelten Iconify-Icons, aufklappbaren Einstellungsbereichen und klarer Markierung der aktiven Seite.
+- Schmale Seitenleiste mit linksbündigen Texten, lokal gebündelten Iconify-Icons und klarer Markierung der aktiven Seite.
 - Quick Start als eigenes Assistentenfenster mit neun erklärten Schritten, Zurück/Weiter und abschließender Änderungsvorschau.
 - Profilauswahl als Dropdown zum direkten Wechseln und Anlegen; Profilverwaltung mit verständlichem Leerzustand.
-- Einheitlich gestaltete Dropdowns, neu angeordnete Editor-Aktionen und Glossy-Buttons mit Glow.
-- RuhrpottZ mit Discord-Button und automatischem Abruf des öffentlichen Serverstatus beim Öffnen und alle 15 Sekunden.
+- Dunkle Buttons passend zur Seitenleiste, funktionsfähige Dropdowns mit mittig ausgerichtetem Iconify-Chevron und neu angeordnete Editor-Aktionen.
+- RuhrpottZ mit geordnetem Live-Überblick für Status, Adresse, Spieler, Karte, Version und Mods; Discord-Button und automatischer Abruf beim Öffnen und alle 15 Sekunden.
 - Öffentliche und unveröffentlichte Arbeit auf zwei Repositorys verteilt: `main` öffentlich, `test` privat.
 
 ### Geprüft
 
 - Java 21 kompiliert; 128 Updater- und 941 App-Prüfungen lokal bestanden.
-- 46 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden, einschließlich Assistent, Profilwechsel, aufklappbarer Bereiche und Status-Timer.
-- Windows x64 als portables Paket und MSIX-Testpaket lokal neu gebaut; die native App wurde sichtbar für die Begutachtung gestartet.
-- Die öffentliche RuhrpottZ-Statusseite wurde mit dem Java-Abruf und dem Parser live gelesen. Der angezeigte Status stammt aus dieser externen Serverliste.
-- Vier private Actions-Jobs erfolgreich; neun Plattformpakete und ihre SHA-256-Dateien aus den Artefakten nachgerechnet.
+- Der ältere Java-Oberflächenstand bestand 46 UI-Prüfungen; diese Zahl ist kein Nachweis für die neue WPF-Oberfläche.
+- Die WPF-App kompiliert unter .NET 10 ohne Warnungen. Quick Start, Profilwechsel, Einstellungen und der neu gestaltete Live-Status wurden in einem laufenden Windows-Fenster geprüft.
+- Windows x64 als portables WPF-ZIP und unsigniertes MSIX-Testpaket lokal neu gebaut und mit gebündelter EXE gestartet.
+- Die öffentliche RuhrpottZ-Statusseite wurde mit dem WPF-Client live gelesen. Der angezeigte Status stammt aus dieser externen Serverliste.
+- Der [private WPF-Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38721714604) bestand auf Windows, Linux und beiden macOS-Architekturen. Alle neun Pakete wurden aus den Actions-Artefakten heruntergeladen und anhand ihrer SHA-256-Dateien geprüft.
 
 ## [0.3.0] - 2026-10-15 · öffentliches Preview-Release
 

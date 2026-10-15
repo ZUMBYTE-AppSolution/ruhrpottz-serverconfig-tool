@@ -1,0 +1,44 @@
+<Window x:Class="PZServerArchitect.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PZ Server Architect" Width="1440" Height="900" MinWidth="1120" MinHeight="720"
+        Background="{StaticResource Bg}" FontFamily="Segoe UI Variable Text, Segoe UI" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+    <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="228"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Background="{StaticResource Sidebar}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="16,22,16,18">
+                <StackPanel DockPanel.Dock="Top" Margin="10,0,0,38">
+                    <TextBlock Text="PZ / SERVER" FontSize="16" FontWeight="Bold"/>
+                    <TextBlock Text="ARCHITECT" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Accent}" Margin="0,2,0,0"/>
+                    <TextBlock Text="WINDOWS EDITION" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,12,0,0"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Border Height="1" Background="{StaticResource Line}" Margin="8,0,8,14"/>
+                    <Button x:Name="CommunityNav" Tag="community" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Margin="0,0,0,6" Content="Community"/>
+                    <Button x:Name="HelpNav" Tag="help" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Content="Hilfe &amp; Updates"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="ARBEITSBEREICH" FontSize="10" FontWeight="Bold" Foreground="{StaticResource Muted}" Margin="10,0,0,13"/>
+                    <Button x:Name="HomeNav" Tag="home" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Content="Übersicht"/>
+                    <Button x:Name="WizardNav" Tag="wizard" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Content="Quick Start"/>
+                    <Button x:Name="SettingsNav" Tag="settings" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Content="Einstellungen"/>
+                    <Button x:Name="ProfilesNav" Tag="profiles" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Content="Profile"/>
+                    <Button x:Name="ExportNav" Tag="export" Click="Navigate_Click" Style="{StaticResource SoftButton}" HorizontalContentAlignment="Left" Content="Prüfen &amp; Export"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions><RowDefinition Height="86"/><RowDefinition Height="*"/><RowDefinition Height="36"/></Grid.RowDefinitions>
+            <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Padding="28,0">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center"><TextBlock x:Name="PageTitle" Text="Übersicht" FontSize="24" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitle" Text="Dein Serverprojekt auf einen Blick" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,3,0,0"/></StackPanel>
+                    <ComboBox x:Name="ProfilePicker" Grid.Column="1" Width="228" VerticalAlignment="Center" SelectionChanged="ProfilePicker_SelectionChanged" Margin="0,0,12,0"/>
+                    <Button Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PrimaryButton}" Click="Save_Click" Content="Profil speichern"/>
+                </Grid>
+            </Border>
+            <ContentControl x:Name="PageHost" Grid.Row="1" Margin="28,25,28,24"/>
+            <Border Grid.Row="2" Background="{StaticResource Sidebar}" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="28,0"><TextBlock x:Name="StatusText" Text="Bereit" FontSize="11" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/></Border>
+        </Grid>
+    </Grid>
+</Window>

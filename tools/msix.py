@@ -21,11 +21,13 @@ def sdk_tool() -> Path:
     return candidates[0]
 
 
-def create(image: Path, out: Path) -> Path:
+def create(image: Path, out: Path, executable: str = 'PZ Server Architect.exe', dist: Path | None = None) -> Path:
     name = os.environ.get('MSIX_IDENTITY_NAME', 'de.zumbyte.PZServerArchitect.Dev')
     publisher = os.environ.get('MSIX_PUBLISHER', 'CN=Zumbyte Appsolution Development')
     if not name or not publisher:
         raise RuntimeError('MSIX package identity is incomplete')
+    if not (image / executable).is_file():
+        raise RuntimeError(f'MSIX executable missing: {executable}')
     stage = out / 'msix-staging'
     if stage.exists():
         raise RuntimeError(f'Refusing to overwrite {stage}')
@@ -44,7 +46,7 @@ def create(image: Path, out: Path) -> Path:
  <Resources><Resource Language="de-DE" /></Resources>
  <Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" /></Dependencies>
  <Capabilities><rescap:Capability Name="runFullTrust" /></Capabilities>
- <Applications><Application Id="PZServerArchitect" Executable="PZ Server Architect.exe"
+ <Applications><Application Id="PZServerArchitect" Executable="{escape(executable)}"
   uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
   <uap:VisualElements DisplayName="PZ Server Architect" Description="Project Zomboid server configurator"
    Square150x150Logo="Assets\\Logo150.png" Square44x44Logo="Assets\\Logo44.png" BackgroundColor="#171827" />
@@ -52,7 +54,7 @@ def create(image: Path, out: Path) -> Path:
 </Package>
 '''
     (stage / 'AppxManifest.xml').write_text(manifest, encoding='utf-8')
-    package = ROOT / 'build/dist' / f'PZ-Server-Architect-{VERSION}-windows-x64-dev-unsigned.msix'
+    package = (dist or ROOT / 'build/dist') / f'PZ-Server-Architect-{VERSION}-windows-x64-dev-unsigned.msix'
     if package.exists():
         raise RuntimeError(f'Refusing to overwrite {package}')
     command = [str(sdk_tool()), 'pack', '/d', str(stage), '/p', str(package), '/h', 'SHA256']

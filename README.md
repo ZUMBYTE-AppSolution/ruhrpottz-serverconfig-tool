@@ -13,7 +13,7 @@
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-lesen-6d28d9"></a>
 </p>
 
-> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die neue Oberfläche v0.4.0 wird im privaten Teststand geprüft. Die App verändert keinen laufenden Server.
+> **Öffentlich verfügbar:** v0.3.0 Preview für Windows x64, macOS Intel und Apple Silicon sowie Linux x64. Die neue Oberfläche v0.4.0 hat die private Plattformprüfung bestanden und steht hier als Teststand bereit. Die App verändert keinen laufenden Server.
 
 ![Übersicht der Desktop-App](docs/images/overview.png)
 
@@ -49,7 +49,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Die neue v0.4.0-Oberfläche und das MSIX-Paket werden vor einer öffentlichen Freigabe getrennt geprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Die neue v0.4.0-Oberfläche und das MSIX-Paket haben den [privaten Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38710901694) bestanden. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

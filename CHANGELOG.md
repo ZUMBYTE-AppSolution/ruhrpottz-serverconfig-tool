@@ -30,6 +30,7 @@
 - Java 21 kompiliert; 128 Updater- und 941 App-Prüfungen lokal bestanden.
 - 32 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden.
 - Windows x64 als portables Paket und MSIX-Testpaket lokal gebaut; die native App beantwortete `--version`.
+- Vier private Actions-Jobs erfolgreich; neun Plattformpakete und ihre SHA-256-Dateien aus den Artefakten nachgerechnet.
 
 ## [0.3.0] - 2026-10-15 · öffentliches Preview-Release
 

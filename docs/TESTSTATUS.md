@@ -23,11 +23,28 @@ Der vollständige aktuelle Buildbericht liegt im Lieferpaket unter test-report.t
 Die lokale UI-Prüfung verwendet nur einen separaten temporären Datenordner und
 Offline-Modus. Es wurden keine echten Userprofile oder Spielstände geändert.
 
-## Nicht durch diesen Lauf belegt
+## GitHub Actions am 15. Oktober 2026
 
-- Windows-/macOS-Starter, deren native Installer und GUI-Bedienung.
-- Eine neue GitHub-CI oder Veröffentlichung. Die vorhandene ältere erfolgreiche
-  Updater-CI ist kein Nachweis dieser neuen Desktop-App.
+[Desktop-Build 38703376018](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018)
+auf Commit `3a28569298894645c9b141a583e87553a89e8c12` ist in allen vier
+Jobs erfolgreich: Windows 2022 x64, macOS 14 arm64, macOS 15 Intel und
+Ubuntu 22.04 x64. Jeder Job hat ein Actions-Artefakt hochgeladen.
+
+- Alle Plattformen kompilierten Java 21 und bestanden die 128 Updater- sowie
+  941 App-Assertions. Linux führte zusätzlich die Swing-UI-Prüfung unter Xvfb aus.
+- Windows erzeugte ein MSI und portables ZIP, macOS je ein DMG und portables
+  ZIP, Linux ein DEB und portables TAR.GZ. Die nativen App-Images enthalten
+  die Java-Laufzeit; ihre Launcher beantworteten `--version`.
+- Der gebündelte Linux-Launcher zeigte unter Xvfb ein echtes 1400×920-Fenster.
+- Die Installer wurden nicht systemweit installiert. Die Matrix allein belegt
+  noch keine öffentliche Veröffentlichung oder einen kompletten Updatezyklus.
+
+## Weiterhin nicht belegt
+
+- Systemweite Installation der Windows-/macOS-/Linux-Installer und vollständige
+  GUI-Bedienung unter Windows/macOS.
+- Ein öffentliches Release, solange der Tag-Workflow nicht erfolgreich
+  abgeschlossen und die Assets auf GitHub geprüft wurden.
 - Vollständige Versionskompatibilität aller Katalogwerte mit sämtlichen PZ-Builds.
 - Spieltest mit Project Zomboid, Modkombination, Multiplayer und AMP.
 - Erfolgreicher Live-Serverstatusabruf; nur Parser-Fixture geprüft.
@@ -47,7 +64,5 @@ Anwendungscode, Katalog, Theme und Icondateien wurden gegenüber dem gelieferten
 0.3.0-Quellpaket bytegenau beibehalten. Änderungen dieses Schritts betreffen
 Repositorydokumentation, Vorlagen, Screenshots und Workflow-Pinning.
 
-Die aktuelle GitHub-Schnittstelle erlaubt Lesen, aber keine Schreibaktionen.
-Der direkte Git-Netzwerkzugriff konnte github.com in dieser Umgebung nicht
-auflösen. Deshalb belegt dieser Schritt keinen Push, neuen GitHub-CI-Lauf oder
-neues öffentliches Release. Ein lokaler Commit ist davon zu unterscheiden.
+Dieser Absatz beschreibt ausschließlich den damaligen lokalen Prüfstand. Der
+spätere Push und der neue GitHub-Actions-Lauf sind oben separat belegt.

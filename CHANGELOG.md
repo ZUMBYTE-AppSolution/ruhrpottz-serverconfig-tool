@@ -4,7 +4,7 @@
 
 - Vorhandene Swing-App und Graphit-Lila-Design unverändert als Buildquelle beibehalten.
 - macOS-Paketmetadaten an die Apple-Versionsregel angepasst; App-Version und Release-Tag bleiben 0.3.0.
-- Windows-MSI mit WiX, macOS-DMG und Linux-DEB sowie portable Pakete in der Actions-Matrix eingerichtet.
+- Windows-MSI mit WiX, macOS-DMG und Linux-DEB sowie portable Pakete im erfolgreichen [Actions-Lauf 38703376018](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut.
 - Releasekette prüft die vollständige Plattformmatrix und alle SHA-256-Werte vor einem öffentlichen Prerelease.
 - Der stabile Updater ignoriert weiterhin Preview-Releases; manuelle Downloads erfolgen über GitHub.
 

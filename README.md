@@ -130,14 +130,14 @@ Die Empfehlung ist von deinen eigenen Serverprofilen getrennt. Keine fest einpro
 
 | Prüfung | Belegter Umfang |
 |---|---|
-| Java-Kompilierung | Java 21, `--release 21 -Xlint:all -Werror`, lokal unter Linux. |
-| Editor/Parser/Profile | 941 automatisierte Offline-Assertions. |
-| GitHub-Updater | 128 automatisierte Offline-Assertions. |
-| Oberfläche | 31 GUI-Prüfschritte mit tatsächlich geöffnetem Swing-Fenster unter Linux/Xvfb. |
-| Linux-Paket | Bereits lokal gebaut; entpackter DEB-Launcher mit enthaltener Laufzeit gestartet. Keine systemweite Paketinstallation. |
-| Windows/macOS, Spielbetrieb | Nicht durch den lokalen Linux-Lauf belegt. |
+| Java-Kompilierung | Java 21, `--release 21 -Xlint:all -Werror`, lokal und in vier GitHub-Actions-Jobs. |
+| Editor/Parser/Profile | 941 automatisierte Offline-Assertions pro Actions-Job. |
+| GitHub-Updater | 128 automatisierte Offline-Assertions pro Actions-Job. |
+| Oberfläche | 31 lokale GUI-Prüfschritte; Linux-Actions startete zusätzlich den gebündelten Launcher mit sichtbarem Fenster unter Xvfb. |
+| Plattformpakete | Windows x64 MSI/ZIP, macOS Intel und Apple Silicon DMG/ZIP, Linux x64 DEB/TAR.GZ in [Actions-Lauf 38703376018](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut. |
+| Installation/Spielbetrieb | Keine systemweite Installerprüfung und kein echter Project-Zomboid-Spieltest belegt. |
 
-Der aktuelle Nachweis steht in [Prüfstatus](docs/TESTSTATUS.md). Frühere erfolgreiche SDK-CI-Läufe beweisen nicht die neue Desktop-App. Screenshots sind echte lokale Programmdarstellungen, keine Design-Mockups.
+Der aktuelle Nachweis steht in [Prüfstatus](docs/TESTSTATUS.md). Screenshots sind echte Programmdarstellungen, keine Design-Mockups.
 
 Noch offen: Tags, Sammelbackup aller Profile, Vergleich zweier beliebiger Profile, OS-Geheimnisspeicher, vollständige Buildmigration, Code-Signing/Notarisierung und native Plattform-/Spieltests. Die [Roadmap](ROADMAP.md) trennt diese Arbeiten vom implementierten Umfang.
 

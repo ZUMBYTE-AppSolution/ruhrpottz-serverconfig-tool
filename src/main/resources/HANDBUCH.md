@@ -191,8 +191,8 @@ UI-Größe 90/100/110/125 Prozent gilt nach App-Neustart.
 
 Die Oberfläche wurde unter Windows als echtes Swing-Fenster geprüft. Windows,
 macOS und Linux wurden für die öffentliche Version 0.3.0 auf GitHub gebaut.
-Die private 0.4.0-Plattformmatrix war erfolgreich; die aktuelle Neugestaltung
-wird erneut gebaut. Ein Spieltest mit Project Zomboid, deiner Modkombination und
+Die private 0.4.0-Plattformmatrix mit der aktuellen Neugestaltung war
+erfolgreich. Ein Spieltest mit Project Zomboid, deiner Modkombination und
 AMP steht aus. Aktuelle Ergebnisse: docs/TESTSTATUS.md.
 
 Unabhängiges Werkzeug, nicht mit The Indie Stone verbunden.

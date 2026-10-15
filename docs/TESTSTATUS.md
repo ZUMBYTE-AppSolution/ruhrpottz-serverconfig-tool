@@ -15,7 +15,7 @@
 - Ein portables Windows-x64-ZIP und ein echtes, unsigniertes MSIX-Testpaket
   wurden aus dem neuen Stand lokal erstellt. Beide SHA-256-Prüfsummen stimmen.
   Die gebündelte EXE wurde als sichtbares Windows-Fenster gestartet.
-- Der [private v0.4.0-Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38714777204)
+- Der [private v0.4.0-Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38716042142)
   war in allen vier Jobs erfolgreich. Die neun Paketdateien aus den vier
   Actions-Artefakten wurden vollständig heruntergeladen und mit ihren
   SHA-256-Dateien nachgerechnet: Windows MSI/ZIP/MSIX, macOS je DMG/ZIP,

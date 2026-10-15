@@ -169,12 +169,74 @@ public partial class MainWindow
 
     private UIElement CommunityPage()
     {
-        var panel = Column(); panel.Children.Add(Text("RuhrpottZ Server", 25, bold: true));
-        panel.Children.Add(Text("Live-Daten direkt aus der öffentlichen Serverliste. Die Anzeige wird alle 15 Sekunden neu angefragt.", 14, muted: true));
-        liveStatus = Text(serverStatus, 15); liveStatus.Margin = new Thickness(0, 25, 0, 24); panel.Children.Add(liveStatus);
-        panel.Children.Add(Row(Action("Jetzt aktualisieren", () => _ = RefreshServerStatus(), false, "refresh"), Action("Discord beitreten", () => OpenUrl("https://discord.gg/hWz2HJcakH"), true, "discord"), Action("Serverseite öffnen", () => OpenUrl("https://pzservers.net/server/75212135"))));
-        var caveat = Text("Quelle: pzservers.net. Eine nicht erreichbare Serverliste bestätigt keinen Serverausfall.", 12, muted: true); caveat.Margin = new Thickness(0, 24, 0, 0); panel.Children.Add(caveat);
-        return Card(panel, new Thickness(32));
+        var page = Column();
+        var heading = new Grid { Margin = new Thickness(0, 0, 0, 20) };
+        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        var headingCopy = Column();
+        headingCopy.Children.Add(Text("RuhrpottZ Server", 25, bold: true));
+        headingCopy.Children.Add(Text("Live-Überblick für die Community", 13, muted: true));
+        heading.Children.Add(headingCopy);
+        var refresh = Action("Aktualisieren", () => _ = RefreshServerStatus(), false, "refresh");
+        refresh.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(refresh, 1); heading.Children.Add(refresh);
+        page.Children.Add(heading);
+
+        var overview = new Grid();
+        overview.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.15, GridUnitType.Star) });
+        overview.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        var health = Column();
+        health.Children.Add(Text("SERVERSTATUS", 11, muted: true, bold: true));
+        var statusLine = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 7) };
+        liveStatusDot = new Border { Width = 12, Height = 12, CornerRadius = new CornerRadius(6), Background = Brush("#B9C4D9"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
+        statusLine.Children.Add(liveStatusDot);
+        liveStatus = Text("Wird geladen", 26, bold: true); statusLine.Children.Add(liveStatus);
+        health.Children.Add(statusLine);
+        liveStatusInfo = Text("Daten werden abgerufen …", 12, muted: true); health.Children.Add(liveStatusInfo);
+        overview.Children.Add(health);
+        var address = Column();
+        address.Children.Add(Text("VERBINDUNG", 11, muted: true, bold: true));
+        liveAddress = Text("—", 20, bold: true); liveAddress.Margin = new Thickness(0, 12, 0, 7);
+        address.Children.Add(liveAddress);
+        address.Children.Add(Text("Adresse des öffentlichen Servers", 12, muted: true));
+        Grid.SetColumn(address, 1); overview.Children.Add(address);
+        var overviewCard = Card(overview, new Thickness(28));
+        overviewCard.Margin = new Thickness(0, 0, 0, 14); page.Children.Add(overviewCard);
+
+        var metrics = new Grid { Margin = new Thickness(0, 0, 0, 14) };
+        for (int i = 0; i < 4; i++) metrics.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        livePlayers = Text("—", 23, bold: true); liveMap = Text("—", 18, bold: true);
+        liveVersion = Text("—", 18, bold: true); liveMods = Text("—", 23, bold: true);
+        AddMetric(metrics, 0, "SPIELER", livePlayers);
+        AddMetric(metrics, 1, "KARTE", liveMap);
+        AddMetric(metrics, 2, "VERSION", liveVersion);
+        AddMetric(metrics, 3, "MODS", liveMods);
+        page.Children.Add(metrics);
+
+        liveSecurity = Text("Sicherheit und Zugang: werden geladen …", 12, muted: true);
+        var metaCard = Card(liveSecurity, new Thickness(18, 15, 18, 15));
+        metaCard.Margin = new Thickness(0, 0, 0, 22); page.Children.Add(metaCard);
+
+        var community = Column();
+        community.Children.Add(Text("Community", 19, bold: true));
+        var intro = Text("Mitspielen, Fragen stellen und die Serverdetails ansehen.", 13, muted: true);
+        intro.Margin = new Thickness(0, 5, 0, 17); community.Children.Add(intro);
+        community.Children.Add(Row(Action("Discord beitreten", () => OpenUrl("https://discord.gg/hWz2HJcakH"), true, "discord"),
+            Action("Serverseite öffnen", () => OpenUrl("https://pzservers.net/server/75212135"))));
+        var communityCard = Card(community, new Thickness(24)); page.Children.Add(communityCard);
+        var source = Text("Quelle: pzservers.net · automatische Aktualisierung alle 15 Sekunden. Ist die Quelle nicht erreichbar, bleibt der Serverstatus unbekannt.", 11, muted: true);
+        source.Margin = new Thickness(6, 15, 0, 0); page.Children.Add(source);
+        UpdateLiveStatus();
+        return Scroll(page);
+    }
+
+    private static void AddMetric(Grid grid, int column, string label, TextBlock value)
+    {
+        var content = Column(); content.Children.Add(Text(label, 10, muted: true, bold: true));
+        value.Margin = new Thickness(0, 11, 0, 0); content.Children.Add(value);
+        var card = Card(content, new Thickness(19));
+        card.Margin = new Thickness(column == 0 ? 0 : 7, 0, column == 3 ? 0 : 7, 0);
+        Grid.SetColumn(card, column); grid.Children.Add(card);
     }
 
     private UIElement HelpPage()
@@ -277,6 +339,7 @@ public partial class MainWindow
     private async Task RefreshServerStatus()
     {
         if (statusBusy) return; statusBusy = true;
+        lastStatusAttempt = DateTime.Now;
         try
         {
             using var response = await statusHttp.GetAsync("https://pzservers.net/server/75212135"); response.EnsureSuccessStatusCode();
@@ -286,10 +349,57 @@ public partial class MainWindow
             int start = plain.IndexOf("Server Details", StringComparison.OrdinalIgnoreCase), end = plain.IndexOf("Claim Server", Math.Max(0, start), StringComparison.OrdinalIgnoreCase);
             if (start < 0) throw new IOException("Serverdaten nicht gefunden");
             string data = plain.Substring(start, (end > start ? end : Math.Min(plain.Length, start + 1200)) - start).Trim();
-            if (!data.Contains("Status", StringComparison.OrdinalIgnoreCase)) throw new IOException("Statusdaten nicht gefunden");
-            serverStatus = data + "\n\nStand: " + DateTime.Now.ToString("HH:mm:ss") + " · pzservers.net";
+            var fields = ParseServerFields(data);
+            if (!fields.TryGetValue("Status", out var status) || !fields.TryGetValue("Address", out var address))
+                throw new IOException("Statusdaten nicht gefunden");
+            string Get(string key) => fields.GetValueOrDefault(key, "—");
+            serverSnapshot = new ServerSnapshot(status, address, Get("Players"), Get("Map"), Get("Version"),
+                Get("Mods"), Get("Secure (VAC)"), Get("Password"), Get("Whitelisted"), DateTime.Now);
         }
-        catch { serverStatus = "Status derzeit unbekannt. Die Serverliste konnte nicht gelesen werden.\nLetzter Versuch: " + DateTime.Now.ToString("HH:mm:ss"); }
-        finally { statusBusy = false; if (liveStatus is not null) liveStatus.Text = serverStatus; }
+        catch { serverSnapshot = null; }
+        finally { statusBusy = false; UpdateLiveStatus(); }
     }
+
+    private static Dictionary<string, string> ParseServerFields(string data)
+    {
+        var normalized = Regex.Replace(data, @"\s+", " ");
+        var matches = Regex.Matches(normalized,
+            @"(?i)(Address|Status|Players|Map|Version|Mods|Secure \(VAC\)|Password|Whitelisted)\s*:");
+        var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        for (int i = 0; i < matches.Count; i++)
+        {
+            int from = matches[i].Index + matches[i].Length;
+            int to = i + 1 < matches.Count ? matches[i + 1].Index : normalized.Length;
+            var value = normalized[from..to].Trim();
+            if (i + 1 == matches.Count && value.Contains("Claim Server", StringComparison.OrdinalIgnoreCase))
+                value = value[..value.IndexOf("Claim Server", StringComparison.OrdinalIgnoreCase)].Trim();
+            fields[matches[i].Groups[1].Value] = value;
+        }
+        return fields;
+    }
+
+    private void UpdateLiveStatus()
+    {
+        if (liveStatus is null) return;
+        var data = serverSnapshot;
+        var online = data is not null && data.Status.Equals("Online", StringComparison.OrdinalIgnoreCase);
+        liveStatus.Text = data?.Status ?? "Status unbekannt";
+        liveStatus.Foreground = Brush(data is null ? "#B9C4D9" : online ? "#83D9B3" : "#F2BC8B");
+        if (liveStatusDot is not null) liveStatusDot.Background = Brush(data is null ? "#718099" : online ? "#83D9B3" : "#F2BC8B");
+        if (liveStatusInfo is not null) liveStatusInfo.Text = data is null
+            ? (lastStatusAttempt == default ? "Daten werden abgerufen …" : "Datenquelle nicht erreichbar · Versuch " + lastStatusAttempt.ToString("HH:mm:ss"))
+            : "Zuletzt geprüft um " + data.CheckedAt.ToString("HH:mm:ss");
+        if (liveAddress is not null) liveAddress.Text = data?.Address ?? "—";
+        if (livePlayers is not null) livePlayers.Text = data?.Players ?? "—";
+        if (liveMap is not null) liveMap.Text = data?.Map ?? "—";
+        if (liveVersion is not null) liveVersion.Text = data?.Version ?? "—";
+        if (liveMods is not null) liveMods.Text = data?.Mods ?? "—";
+        if (liveSecurity is not null) liveSecurity.Text = data is null ? "Sicherheit und Zugang: keine aktuellen Daten"
+            : $"VAC: {TranslateStatus(data.Vac)}    ·    Passwort: {TranslateStatus(data.Password)}    ·    Whitelist: {TranslateStatus(data.Whitelist)}";
+    }
+
+    private static string TranslateStatus(string value) => value.Trim().ToLowerInvariant() switch
+    {
+        "yes" => "Ja", "no" => "Nein", "secure" => "Aktiv", "insecure" => "Inaktiv", _ => value
+    };
 }

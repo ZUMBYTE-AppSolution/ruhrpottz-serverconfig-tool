@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace PZServerArchitect.Windows;
@@ -52,7 +53,7 @@ internal sealed class WizardWindow : Window
         shell.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         page = new Grid(); shell.Children.Add(page);
         var footer = new Grid { Margin = new Thickness(0, 20, 0, 0) }; footer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); footer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var cancel = DialogStyle.Button("Abbrechen"); cancel.Click += (_, _) => DialogResult = false; footer.Children.Add(cancel);
+        var cancel = DialogStyle.Button("Abbrechen"); cancel.HorizontalAlignment = HorizontalAlignment.Left; cancel.Width = 138; cancel.Click += (_, _) => DialogResult = false; footer.Children.Add(cancel);
         var actions = new StackPanel { Orientation = Orientation.Horizontal }; Grid.SetColumn(actions, 1); footer.Children.Add(actions);
         back = DialogStyle.Button("Zurück"); back.Click += (_, _) => { if (step > 0) { step--; Render(); } }; actions.Children.Add(back);
         next = DialogStyle.Button("Weiter", true); next.Click += (_, _) => { if (step < 9) { step++; Render(); } else Apply(); }; actions.Children.Add(next);
@@ -69,7 +70,9 @@ internal sealed class WizardWindow : Window
         head.Children.Add(DialogStyle.Label(step == 9 ? "VORSCHAU" : $"SCHRITT {step + 1} VON 9", 12, true));
         var title = DialogStyle.Label(step == 9 ? "Deine Konfiguration prüfen" : Questions[step], 25); title.FontWeight = FontWeights.SemiBold; title.Margin = new Thickness(0, 8, 0, 7); head.Children.Add(title);
         head.Children.Add(DialogStyle.Label(step == 9 ? "Diese Werte werden nach Bestätigung als ein Bearbeitungsschritt übernommen." : Explanations[step], 14, true));
-        var progress = new ProgressBar { Minimum = 0, Maximum = 9, Value = step + 1, Height = 6, Margin = new Thickness(0, 24, 0, 18), Foreground = DialogStyle.Color("#B58CFF"), Background = DialogStyle.Color("#30394D") }; head.Children.Add(progress);
+        var progress = new UniformGrid { Columns = 9, Rows = 1, Height = 6, Margin = new Thickness(0, 24, 0, 18) };
+        for (int i = 0; i < 9; i++) progress.Children.Add(new Border { Background = DialogStyle.Color(i <= step ? "#B58CFF" : "#344056"), CornerRadius = new CornerRadius(3), Margin = new Thickness(0, 0, i == 8 ? 0 : 5, 0) });
+        head.Children.Add(progress);
         page.Children.Add(head);
         var body = new StackPanel(); Grid.SetRow(body, 1); page.Children.Add(body);
         if (step < 9)

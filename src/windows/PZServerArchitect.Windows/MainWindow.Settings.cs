@@ -17,6 +17,7 @@ public partial class MainWindow
         var groupHeader = new StackPanel();
         groupHeader.Children.Add(Text("THEMA", 10, muted: true, bold: true));
         var groups = new ComboBox { Width = 290, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 5, 0, 0) };
+        System.Windows.Automation.AutomationProperties.SetName(groups, "Einstellungsthema");
         groups.Items.Add(new CategoryChoice("all", "Alle Themen"));
         groups.Items.Add(new CategoryChoice("changed", "Geänderte Werte"));
         foreach (var c in state.GetProperty("categories").EnumerateArray()) groups.Items.Add(new CategoryChoice(c.S("id"), c.S("title")));
@@ -24,6 +25,7 @@ public partial class MainWindow
         groupHeader.Children.Add(groups); toolbar.Children.Add(groupHeader);
         var searchHeader = new StackPanel(); searchHeader.Children.Add(Text("SUCHEN", 10, muted: true, bold: true));
         var search = new TextBox { Width = 286, Text = searchText, ToolTip = "Einstellungen nach Name oder Schlüssel suchen", Margin = new Thickness(0, 5, 0, 0) };
+        System.Windows.Automation.AutomationProperties.SetName(search, "Einstellungen suchen");
         searchHeader.Children.Add(search);
         searchHeader.SetValue(Grid.ColumnProperty, 1); toolbar.Children.Add(searchHeader);
         root.Children.Add(toolbar);

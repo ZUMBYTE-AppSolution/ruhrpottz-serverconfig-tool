@@ -23,8 +23,17 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer statusTimer = new() { Interval = TimeSpan.FromSeconds(15) };
     private readonly HttpClient statusHttp = new() { Timeout = TimeSpan.FromSeconds(9) };
     private bool statusBusy;
-    private string serverStatus = "Status wird geladen …";
+    private ServerSnapshot? serverSnapshot;
+    private DateTime lastStatusAttempt;
     private TextBlock? liveStatus;
+    private TextBlock? liveStatusInfo;
+    private TextBlock? liveAddress;
+    private TextBlock? livePlayers;
+    private TextBlock? liveMap;
+    private TextBlock? liveVersion;
+    private TextBlock? liveMods;
+    private TextBlock? liveSecurity;
+    private Border? liveStatusDot;
     private TextBlock? liveUpdate;
     private string updateStatus = "Noch nicht geprüft";
     private string updateState = "";
@@ -65,6 +74,7 @@ public partial class MainWindow : Window
     }
     private static void SetNav(Button button, string icon, string title)
     {
+        System.Windows.Automation.AutomationProperties.SetName(button, title);
         var row = new StackPanel { Orientation = Orientation.Horizontal };
         row.Children.Add(Icon(icon, 18));
         row.Children.Add(new TextBlock { Text = title, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12, 0, 0, 0), FontSize = 13 });
@@ -129,6 +139,7 @@ public partial class MainWindow : Window
     private static Button Action(string title, Action action, bool primary = false, string? icon = null)
     {
         var button = new Button { Style = (Style)Application.Current.FindResource(primary ? "PrimaryButton" : "SoftButton") };
+        System.Windows.Automation.AutomationProperties.SetName(button, title);
         if (icon is null) button.Content = title;
         else { var row = new StackPanel { Orientation = Orientation.Horizontal }; row.Children.Add(Icon(icon, 17)); row.Children.Add(new TextBlock { Text = title, Margin = new Thickness(9, 0, 0, 0) }); button.Content = row; }
         button.Click += (_, _) => action(); return button;
@@ -142,6 +153,8 @@ public partial class MainWindow : Window
         statusTimer.Stop(); statusHttp.Dispose(); core.Dispose(); base.OnClosing(e);
     }
     private sealed record ProfileItem(string Id, string Name, string Updated) { public override string ToString() => Name; }
+    private sealed record ServerSnapshot(string Status, string Address, string Players, string Map,
+        string Version, string Mods, string Vac, string Password, string Whitelist, DateTime CheckedAt);
     private sealed class SettingItem(JsonElement e)
     {
         public string Id { get; } = e.S("id"); public string Title { get; } = e.S("title"); public string Key { get; } = e.S("key");

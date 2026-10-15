@@ -33,7 +33,7 @@
             <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Padding="28,0">
                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                     <StackPanel VerticalAlignment="Center"><TextBlock x:Name="PageTitle" Text="Übersicht" FontSize="24" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitle" Text="Dein Serverprojekt auf einen Blick" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,3,0,0"/></StackPanel>
-                    <ComboBox x:Name="ProfilePicker" Grid.Column="1" Width="228" VerticalAlignment="Center" SelectionChanged="ProfilePicker_SelectionChanged" Margin="0,0,12,0"/>
+                    <ComboBox x:Name="ProfilePicker" AutomationProperties.Name="Aktives Profil" Grid.Column="1" Width="228" VerticalAlignment="Center" SelectionChanged="ProfilePicker_SelectionChanged" Margin="0,0,12,0"/>
                     <Button Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PrimaryButton}" Click="Save_Click" Content="Profil speichern"/>
                 </Grid>
             </Border>

@@ -56,16 +56,24 @@ def installer(image: Path, output: Path, work: Path) -> None:
         component_id = f'Cmp{index}'
         guid = uuid.uuid5(namespace, str(relative).lower().replace('\\', '/'))
         source = escape(str(file))
-        extra = ''
-        if relative.as_posix() == 'PZServerArchitect.exe':
-            extra = ('<Shortcut Id="StartMenuShortcut" Directory="ProgramMenuDir" '
-                     'Name="PZ Server Architect" WorkingDirectory="INSTALLDIR" '
-                     'Advertise="no" Icon="AppIcon" />'
-                     '<RemoveFolder Id="RemoveStartMenu" Directory="ProgramMenuDir" On="uninstall" />')
         components[relative.parent].append(
             f'<Component Id="{component_id}" Guid="{guid}" Win64="yes">'
-            f'<File Id="File{index}" Source="{source}" KeyPath="yes" />{extra}</Component>')
+            f'<File Id="File{index}" Source="{source}" KeyPath="yes" /></Component>')
         refs.append(f'<ComponentRef Id="{component_id}" />')
+
+    # Start-menu shortcuts are per-user MSI resources. Keep them apart from
+    # machine-wide files and give their component an HKCU registry key path.
+    shortcut_guid = uuid.uuid5(namespace, 'start-menu-shortcut')
+    components[Path('.')].append(
+        f'<Component Id="StartMenuComponent" Guid="{shortcut_guid}" Win64="yes">'
+        '<Shortcut Id="StartMenuShortcut" Directory="ProgramMenuDir" '
+        'Name="PZ Server Architect" WorkingDirectory="INSTALLDIR" '
+        'Target="[INSTALLDIR]PZServerArchitect.exe" Advertise="no" Icon="AppIcon" />'
+        '<RemoveFolder Id="RemoveStartMenu" Directory="ProgramMenuDir" On="uninstall" />'
+        '<RegistryValue Root="HKCU" Key="Software\\Zumbyte Appsolution\\PZ Server Architect" '
+        'Name="installed" Type="integer" Value="1" KeyPath="yes" />'
+        '</Component>')
+    refs.append('<ComponentRef Id="StartMenuComponent" />')
 
     def directory_xml(relative: Path) -> str:
         nested = ''.join(directory_xml(d) for d in children[relative])

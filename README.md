@@ -44,6 +44,8 @@ Das MSIX-Testpaket aus dem Entwicklungsbuild ist derzeit **nicht signiert** und 
 
 ![Einstellungen mit Bereichsauswahl](docs/images/settings.png)
 
+![Aufklappbare Einstellungsbereiche](docs/images/category.png)
+
 ![Quick Start als geführtes Fenster](docs/images/wizard.png)
 
 ## Hinweise zu deinen Daten
@@ -54,7 +56,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Die neue v0.4.0-Oberfläche und das MSIX-Paket haben den [privaten Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38710901694) bestanden. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+Der öffentliche Stand v0.3.0 wurde in [vier Plattformjobs](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) gebaut und als [Preview-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) veröffentlicht. Die neu gestaltete v0.4.0-Oberfläche und das MSIX-Testpaket haben den [privaten Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool-dev/actions/runs/38714777204) bestanden; alle neun Pakete dieses Laufs wurden anhand ihrer SHA-256-Dateien überprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

@@ -31,7 +31,7 @@
 ### Geprüft
 
 - Java 21 kompiliert; 128 Updater- und 941 App-Prüfungen lokal bestanden.
-- 41 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden, einschließlich Assistent, Profilwechsel und Status-Timer.
+- 46 UI-Prüfungen unter Windows mit echter Swing-Oberfläche bestanden, einschließlich Assistent, Profilwechsel, aufklappbarer Bereiche und Status-Timer.
 - Windows x64 als portables Paket und MSIX-Testpaket lokal neu gebaut; die native App wurde sichtbar für die Begutachtung gestartet.
 - Die öffentliche RuhrpottZ-Statusseite wurde mit dem Java-Abruf und dem Parser live gelesen. Der angezeigte Status stammt aus dieser externen Serverliste.
 - Vier private Actions-Jobs erfolgreich; neun Plattformpakete und ihre SHA-256-Dateien aus den Artefakten nachgerechnet.

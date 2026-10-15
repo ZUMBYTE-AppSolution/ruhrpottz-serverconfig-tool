@@ -5,6 +5,7 @@ import java.awt.*;
 import java.nio.file.*;
 import java.util.*;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public final class UiSmoke {
     private static App app;private static int checks;
@@ -19,6 +20,7 @@ public final class UiSmoke {
             SwingUtilities.invokeAndWait(()->{JScrollPane home=children(app).stream().filter(c->c instanceof JScrollPane).map(c->(JScrollPane)c).findFirst().orElseThrow();ok(home.getViewport().getViewPosition().y==0,"home heading starts visible");});
             for(String route:new String[]{"all","rp","wizard","profiles","presets","export","server","about"}){SwingUtilities.invokeAndWait(()->app.navigate(route));robot.waitForIdle();Thread.sleep(250);ok(app.isShowing(),"page "+route);capture(robot,out,"page-"+route);}
             java.lang.reflect.Field timerField=App.class.getDeclaredField("statusTimer");timerField.setAccessible(true);javax.swing.Timer timer=(javax.swing.Timer)timerField.get(app);ok(timer!=null&&timer.getDelay()==15_000,"server status refresh interval is 15 seconds");ok(!timer.isRunning(),"status polling stops outside server page");
+            SwingUtilities.invokeAndWait(()->{app.navigate("server");ok(timer.isRunning(),"server status refresh starts on community page");app.navigate("home");ok(!timer.isRunning(),"server status refresh stops after leaving");button(app,"Bereiche anzeigen").doClick();JButton category=button(app,"Multiplayer & PvP");ok(category.isShowing(),"sidebar categories expand");category.doClick();ok(children(app).stream().anyMatch(c->c instanceof JLabel l&&l.isShowing()&&Objects.equals(l.getText(),"Multiplayer & PvP")),"sidebar category opens matching settings");});capture(robot,out,"page-category");
             SwingUtilities.invokeAndWait(()->app.navigate("rp"));robot.waitForIdle();SwingUtilities.invokeAndWait(()->{
                 Theme.Toggle toggle=(Theme.Toggle)children(app).stream().filter(c->c instanceof Theme.Toggle).findFirst().orElseThrow();ok(toggle.missing,"missing distinct from false");toggle.doClick();ok(app.workspace.is("ini","PVP",true),"UI toggle sets true");
                 Theme.Toggle second=(Theme.Toggle)children(app).stream().filter(c->c instanceof Theme.Toggle).findFirst().orElseThrow();second.doClick();ok(app.workspace.is("ini","PVP",false),"UI toggle sets false");
@@ -44,5 +46,5 @@ public final class UiSmoke {
     private static JDialog waitDialog()throws Exception{return waitDialog("");}
     private static JDialog waitDialog(String title)throws Exception{for(int i=0;i<80;i++){JDialog[] result={null};SwingUtilities.invokeAndWait(()->{for(Window w:Window.getWindows())if(w instanceof JDialog d&&d.isShowing()&&d.getTitle().contains(title))result[0]=d;});if(result[0]!=null)return result[0];Thread.sleep(100);}throw new AssertionError("Dialog not shown: "+title);}
     private static void capture(Robot robot,Path out,String name)throws Exception{capture(robot,out,name,app);}
-    private static void capture(Robot robot,Path out,String name,Window window)throws Exception{robot.waitForIdle();Rectangle[] bounds={null};SwingUtilities.invokeAndWait(()->bounds[0]=new Rectangle(window.getLocationOnScreen(),window.getSize()));ImageIO.write(robot.createScreenCapture(bounds[0]),"png",out.resolve(name+".png").toFile());checks++;}
+    private static void capture(Robot robot,Path out,String name,Window window)throws Exception{BufferedImage[] image={null};SwingUtilities.invokeAndWait(()->{Container content=((RootPaneContainer)window).getContentPane();image[0]=new BufferedImage(content.getWidth(),content.getHeight(),BufferedImage.TYPE_INT_RGB);Graphics2D graphics=image[0].createGraphics();content.printAll(graphics);graphics.dispose();});ImageIO.write(image[0],"png",out.resolve(name+".png").toFile());checks++;}
 }

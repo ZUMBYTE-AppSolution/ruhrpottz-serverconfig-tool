@@ -1,23 +1,26 @@
-# PZ Server Architect 0.3.0 Preview
+# PZ Server Architect 0.4.0 Preview
 Copyright by Zumbyte - Appsolution | www.zumbyte.de
 
 ## Start
 
-Dies ist eine echte Java-Desktop-Anwendung mit Swing, kein Browserfenster.
-Das Java-Paket benötigt Java 21 oder neuer. Entpacke das gesamte Paket und
-starte START-Windows.cmd, START-macOS.command oder START-Linux.sh.
+Windows x64 verwendet die native WPF-Oberfläche. Entpacke das portable ZIP
+vollständig und starte `PZServerArchitect.exe`, oder verwende den MSI-Installer.
+Die benötigten Laufzeiten sind enthalten. Das zusätzliche MSIX ist ein
+unsigniertes Entwicklungspaket; die Microsoft-Store-Identität ist noch offen.
+
+macOS und Linux verwenden die Java-Swing-Oberfläche. Ihre nativen Pakete
+enthalten Java 21. Eine separate Java-Ausgabe benötigt Java 21 oder neuer;
+deren Starter heißen START-Windows.cmd, START-macOS.command und START-Linux.sh.
 Unter Linux kann je nach Desktop zuerst das Ausführungsrecht nötig sein:
 `chmod +x START-Linux.sh`.
 
-Ein nativ verpacktes Programm enthält die Java-Laufzeit. Das lokale Linux-Paket
-wurde auf Debian 13 x64 gebaut. Andere Distributionen können Bibliotheken oder
-eine neuere glibc benötigen. Die Java-Ausgabe ist die Alternative mit einer
-passenden Java-21-Laufzeit deines Systems.
+Die öffentlichen Linux-Pakete werden auf Ubuntu 22.04 x64 gebaut. Andere
+Distributionen können zusätzliche Bibliotheken benötigen. Die Java-Ausgabe ist
+die Alternative mit einer passenden Java-21-Laufzeit deines Systems.
 
-Windows-/macOS-Starter wurden hier nicht auf echten Zielgeräten ausgeführt.
-Native Windows-/macOS-Pakete müssen mit dem mitgelieferten GitHub-Workflow
-gebaut und anschließend installiert/getestet werden. Die UI ist keine JavaFX-
-Oberfläche: sie verwendet Swing, wie der zuletzt gezeigte Desktopentwurf.
+Das portable Windows-Paket wurde als echte Desktop-App gestartet und bedient.
+Der Actions-Workflow baut MSI, ein unsigniertes MSIX-Testpaket, macOS-DMGs und
+Linux-DEB. Eine systemweite Installation dieser Pakete ist noch nicht bestätigt.
 
 ## 1. Ausgangspunkt
 
@@ -33,8 +36,10 @@ die Spielversionsnummer. Neue Arbeitsstände verwenden als Ausgangsbasis Schema 
 ## 2. Einstellungen richtig bedienen
 
 360 Einträge sind im Katalog, zusätzliche skalare Mod-Einstellungen werden beim
-Import sichtbar. Suche mit Enter öffnen; innerhalb der Einstellungsansicht wird
-bereits beim Tippen gefiltert. Suche findet Titel, Schlüssel und Originalkommentare.
+Import sichtbar. Unter Windows öffnet Strg+F die Einstellungsansicht;
+die Suche filtert Titel und Schlüssel bereits beim Tippen. Über „Thema“ wählst
+du einen Bereich, alle Themen oder geänderte Werte. Die Java-Oberfläche bietet
+zusätzliche Suchfilter und durchsucht auch Originalkommentare.
 
 Bei jeder Einstellung siehst du Wirkung, Einheit, bekannten Wertebereich,
 Auswahlstufen, den importierten Originalwert und den aktuellen Wert. Bei nicht
@@ -42,24 +47,27 @@ belegten Grenzen oder Modwirkungen wird die Unsicherheit ausdrücklich angezeigt
 Nicht alle 360 Felder besitzen vollständig verifizierte Wertebereiche für jeden
 Build. Der Katalog ist kein Nachweis universeller Versionskompatibilität.
 
-Ein/Aus-Funktionen sind echte Toggle-Switches. Technische true/false-Werte bleiben
+Ein/Aus-Funktionen erscheinen unter Windows als Auswahlfelder, in der
+Java-Oberfläche als Schalter. Technische true/false-Werte bleiben
 Booleans. Dokumentierte numerische 0/1-Schalter behalten ihre Kodierung. Eine normale
 Zahl 0 oder 1 wird nicht allein wegen ihres aktuellen Werts zum Schalter.
 
 "Nicht gesetzt" heißt: dieser Schlüssel steht nicht in der Datei. Es ist weder
-false noch 0. Bei Dropdowns entfernt die Auswahl "Nicht gesetzt" den Schlüssel.
+false noch 0. Unter Windows entfernt „Schlüssel entfernen“ den Eintrag; in der
+Java-Oberfläche gibt es dafür auch die Dropdown-Auswahl „Nicht gesetzt“.
 "Original wiederherstellen" stellt den importierten Wert wieder her oder entfernt
 eine seitdem hinzugefügte Einstellung.
 
 Mehrfachauswahlen erhalten Dropdowns. Zahlen erhalten editierbare Felder mit
-Validierung. Text-/Zahlenänderungen werden mit Anwenden oder Enter übernommen;
-beim Seitenwechsel wird eine ausstehende gültige Eingabe ebenfalls übernommen.
-Ungültige Eingaben verhindern den Seitenwechsel. Originalkommentare mit eindeutig
+Validierung. Unter Windows werden Werte mit „Übernehmen“ gespeichert;
+Text-/Zahlenfelder akzeptieren auch Enter. Vor dem Seitenwechsel die Eingabe
+übernehmen. Die Java-Oberfläche übernimmt gültige ausstehende Eingaben beim
+Seitenwechsel und verhindert den Wechsel bei ungültigen Werten. Originalkommentare mit eindeutig
 nummerierten `1 = ...`-Zeilen können eine Auswahlliste ergänzen/ersetzen; Min/Max-
 Angaben können Grenzen liefern. Kommentare selbst sind keine externe Verifikation.
 
-Filter: alle, vorhandene Werte, Änderungen, Favoriten und zusätzliche Mod-Felder.
-Favoriten werden in den lokalen App-Einstellungen gespeichert.
+Die Java-Oberfläche besitzt Filter für alle, vorhandene Werte, Änderungen,
+Favoriten und zusätzliche Mod-Felder. Favoriten werden dort lokal gespeichert.
 
 ## 3. Vorlagen und Quick Start
 
@@ -67,9 +75,10 @@ Acht allgemeine Vorschläge: Koop & Freunde, PvE Community, Survival ausgewogen,
 Hardcore Survival, PvP Survival, Roleplay mit Zombies, Ziviles Roleplay,
 Bauen & Testen. Es gibt kein RuhrpottZ-Konfigurationsprofil.
 
-Der Assistent stellt neun Fragen auf einer gemeinsamen Seite: Spielrichtung,
-Zombiepopulation, Tageslänge, Alltagsloot, Zombie-Wiederkehr, PvP, Lernfortschritt,
-Versorgung und Wetter/Sicht. "Wie Vorlage" übernimmt die gewählte Spielrichtung.
+Der Assistent öffnet ein eigenes Fenster mit neun erklärten Schritten und
+Zurück/Weiter: Spielrichtung, Zombiepopulation, Tageslänge, Alltagsloot,
+Zombie-Wiederkehr, PvP, Lernfortschritt, Versorgung und Wetter/Sicht.
+"Wie Vorlage" übernimmt die gewählte Spielrichtung.
 Wetter und Versorgung bleiben ohne bewusste Antwort unverändert.
 
 Vor der Übernahme erscheint ein Vergleich. "Nur bereits vorhandene Schlüssel
@@ -89,8 +98,10 @@ Klare Sicht/Tag regeln Wetter/Licht, nicht unbegrenzte clientseitige Renderdista
 
 ## 4. Profile und Daten
 
-Profile können gespeichert, geöffnet, dupliziert, umbenannt und in den Papierkorb
-verschoben werden. Notizen und ein Serverdateiname gehören zum Profil.
+Profile können oben über „Aktives Profil“ gewechselt oder neu angelegt sowie
+gespeichert, geöffnet, dupliziert, umbenannt und in den Papierkorb verschoben
+werden. Ein Serverdateiname gehört zum Profil; Notizen lassen sich in der
+Java-Oberfläche bearbeiten.
 Jede weitere Speicherung sichert die vorige Fassung; maximal zehn alte Fassungen
 pro Profil bleiben erhalten. Eine Wiederherstellung erzeugt eine unabhängige Kopie.
 Änderungen im aktuellen Arbeitsbereich besitzen bis zu 40 Undo-/Redo-Schritte.
@@ -148,10 +159,11 @@ Kein Save-Reset, kein Serverneustart, kein Workshop-Upload durch dieses Programm
 
 ## 7. Updates
 
-Der existierende GitHub-only-Updater ist jetzt mit der Oberfläche verbunden.
-Standard: beim Start prüfen und passende neuere stabile Pakete automatisch laden.
-Unter App, Updates & Hilfe kann auf Benachrichtigung oder manuell umgestellt werden.
-Das Verhalten wird gespeichert. Kein eigener Masterserver, kein Nutzer-Token.
+Der GitHub-only-Updater ist mit beiden Oberflächen verbunden. Windows prüft
+beim Start; unter „Hilfe & Updates“ kannst du erneut prüfen, ein angebotenes
+Paket laden und das geprüfte Paket öffnen. Die Java-Oberfläche bietet zusätzlich
+gespeicherte Einstellungen für automatisches Laden, Benachrichtigung oder
+manuelle Prüfung. Kein eigener Masterserver, kein Nutzer-Token.
 
 Drafts, Prereleases, SDK-Tags, ältere Versionen und fremde Repositories werden nicht
 angeboten. Passende Dateien müssen exakte Plattformnamen, Größe und GitHub-SHA-256
@@ -165,31 +177,35 @@ unter Linux. Andere Linux-Paketmanager sind damit nicht automatisch abgedeckt.
 
 Ein ZIP/JAR der Preview ist kein automatisches App-Update. Ein Release muss erst
 vollständig gebaut, hochgeladen und als stabil veröffentlicht sein, damit es
-angeboten wird. Es wurde in diesem Entwicklungsschritt kein Release veröffentlicht.
-Die App arbeitet auch ohne Netzwerk. `--offline` unterbindet in Testläufen ihre
-Update- und Serverabfragen; bewusst geöffnete Browserlinks bleiben eigene Aktionen.
+angeboten wird. v0.4.0 ist ein Preview-Release und wird deshalb manuell über
+GitHub heruntergeladen. Der Editor arbeitet auch ohne Netzwerk. In der
+Java-Ausgabe unterbindet `--offline` in Testläufen Update- und Serverabfragen;
+bewusst geöffnete Browserlinks bleiben eigene Aktionen.
 
 ## 8. RuhrpottZ und Serverstatus
 
-RuhrpottZ ist nur ein getrennter Server-Tipp: German ZomboID Roleplay Project.
-https://pzservers.net/server/75212135
-Discord folgt, daher gibt es noch keinen Discord-Beitrittsbutton.
+RuhrpottZ ist ein getrennter Community-Bereich: German ZomboID Roleplay Project.
+Der Discord-Button öffnet die Einladung https://discord.gg/hWz2HJcakH.
 
-Status wird nach Klick über HTTPS aus der öffentlichen Listenseite gelesen,
-maximal einmal pro Minute. Quelle und Abrufzeit werden angezeigt. Änderungen am
-Seitenformat, Sperren oder Netzfehler bedeuten "unbekannt", nicht sicher "offline".
-Diese HTML-Anbindung wurde mit einer Testseite geprüft, nicht live bestätigt.
+Beim Öffnen und danach alle 15 Sekunden wird der öffentliche Status über HTTPS
+von pzservers.net/server/75212135 abgerufen. Unter Windows läuft der Abruf
+während die App geöffnet ist, in der Java-Oberfläche während die Seite sichtbar ist.
+Quelle und Abrufzeit werden angezeigt. Änderungen am Seitenformat, Sperren oder
+Netzfehler bedeuten "unbekannt", nicht sicher "offline". Der Abruf und die
+Auswertung der Live-Seite wurden unter Windows geprüft; die Serverliste kann zeitversetzt sein.
 Keine erfundenen CPU-/RAM-/Ping-/Uptime-Werte und kein automatisches Spielertracking.
 
 ## 9. Hilfe und Grenzen
 
 Strg/Cmd+S Speichern, Strg/Cmd+F Suchen, Strg/Cmd+E Export,
 Strg/Cmd+Z Rückgängig, Strg/Cmd+Y Wiederholen.
-UI-Größe 90/100/110/125 Prozent gilt nach App-Neustart.
+Die Java-Oberfläche bietet eine UI-Größe von 90/100/110/125 Prozent nach
+App-Neustart. WPF verwendet die Windows-Anzeigeskalierung.
 
-Die Preview wurde auf Windows, macOS und Linux in GitHub Actions gebaut.
-Unter Linux wurde die Swing-Oberfläche als echtes Fenster geprüft. Die
-Installerinstallation und ein Spieltest mit Project Zomboid, deiner
-Modkombination und AMP stehen aus. Aktuelle Details: docs/TESTSTATUS.md.
+Die native WPF-Oberfläche wurde unter Windows als echtes Fenster geprüft.
+Der v0.4.0-Vorlauf bestand auf Windows, macOS und Linux. Die öffentliche
+Releasekette wiederholt die Plattformmatrix und prüft alle Paket-Prüfsummen.
+Ein Spieltest mit Project Zomboid, deiner Modkombination und
+AMP steht aus. Aktuelle Ergebnisse: docs/TESTSTATUS.md.
 
 Unabhängiges Werkzeug, nicht mit The Indie Stone verbunden.

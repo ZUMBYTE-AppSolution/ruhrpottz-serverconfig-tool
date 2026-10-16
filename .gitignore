@@ -1,6 +1,8 @@
 /build/
 /dist/
 /publish-work/
+/src/windows/**/bin/
+/src/windows/**/obj/
 *.class
 *.log
 *.part

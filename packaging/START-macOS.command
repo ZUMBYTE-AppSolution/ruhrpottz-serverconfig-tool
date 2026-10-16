@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-APP="$HERE/PZ-Server-Architect-0.3.0.jar"
+APP="$HERE/PZ-Server-Architect-0.4.0.jar"
 JAVA=java
 if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then JAVA="$JAVA_HOME/bin/java"; fi
 if [ -x "$HERE/runtime/bin/java" ]; then JAVA="$HERE/runtime/bin/java"; fi

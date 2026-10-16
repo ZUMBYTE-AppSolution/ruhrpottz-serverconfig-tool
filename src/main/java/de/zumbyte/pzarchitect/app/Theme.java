@@ -4,27 +4,71 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.plaf.basic.BasicGraphicsUtils;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.imageio.ImageIO;
 
 @SuppressWarnings("serial")
 public final class Theme {
-    public static final Color BG=new Color(15,16,22),SIDE=new Color(19,20,29),CARD=new Color(26,27,38),LINE=new Color(52,52,71),TEXT=new Color(237,232,247),MUTED=new Color(163,155,181),PURPLE=new Color(166,117,242),MINT=new Color(111,217,188);
+    public static final Color BG=new Color(13,15,24),SIDE=new Color(19,22,34),CARD=new Color(27,31,46),LINE=new Color(59,65,88),TEXT=new Color(246,246,252),MUTED=new Color(181,187,205),PURPLE=new Color(178,137,255),MINT=new Color(111,226,195);
     public static float scale=1;
     private Theme(){}
     public static int px(int p){return Math.round(p*scale);}
-    public static Font font(int p,int style){return new Font(Font.DIALOG,style,px(p));}
+    public static Font font(int p,int style){return new Font(System.getProperty("os.name","").startsWith("Windows")?"Segoe UI":"SansSerif",style,px(Math.max(12,p)));}
     public static void install(){
-        UIManager.put("defaultFont",font(13,0));
-        for(String key:new String[]{"Label","Button","ToggleButton","CheckBox","RadioButton","ComboBox","TextField","PasswordField","TextArea","TextPane","List","Table","Tree","Menu","MenuItem","OptionPane","TabbedPane","Spinner"}){UIManager.put(key+".font",font(13,0));UIManager.put(key+".foreground",TEXT);UIManager.put(key+".background",CARD);}
-        UIManager.put("Panel.background",BG);UIManager.put("OptionPane.background",BG);UIManager.put("OptionPane.messageForeground",TEXT);UIManager.put("ScrollPane.background",BG);UIManager.put("Viewport.background",BG);UIManager.put("List.selectionBackground",new Color(59,43,83));UIManager.put("List.selectionForeground",TEXT);UIManager.put("TextField.caretForeground",TEXT);UIManager.put("TextArea.caretForeground",TEXT);UIManager.put("TextField.selectionBackground",new Color(80,49,120));UIManager.put("ComboBox.selectionBackground",new Color(59,43,83));UIManager.put("ScrollBar.thumb",LINE);UIManager.put("ScrollBar.track",BG);UIManager.put("ScrollBar.width",px(12));
+        try{UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}catch(Exception ignored){}
+        UIManager.put("defaultFont",font(15,0));
+        for(String key:new String[]{"Label","Button","ToggleButton","CheckBox","RadioButton","ComboBox","TextField","PasswordField","TextArea","TextPane","List","Table","Tree","Menu","MenuItem","OptionPane","TabbedPane","Spinner"}){UIManager.put(key+".font",font(15,0));UIManager.put(key+".foreground",TEXT);UIManager.put(key+".background",CARD);}
+        UIManager.put("Panel.background",BG);UIManager.put("OptionPane.background",BG);UIManager.put("OptionPane.messageForeground",TEXT);UIManager.put("Button.disabledText",MUTED);UIManager.put("ScrollPane.background",BG);UIManager.put("Viewport.background",BG);UIManager.put("List.selectionBackground",new Color(59,43,83));UIManager.put("List.selectionForeground",TEXT);UIManager.put("TextField.caretForeground",TEXT);UIManager.put("TextArea.caretForeground",TEXT);UIManager.put("TextField.selectionBackground",new Color(80,49,120));UIManager.put("ComboBox.selectionBackground",new Color(59,43,83));UIManager.put("ScrollBar.thumb",LINE);UIManager.put("ScrollBar.track",BG);UIManager.put("ScrollBar.width",px(12));
     }
     public static JPanel column(){JPanel p=new Column();p.setAlignmentX(Component.LEFT_ALIGNMENT);p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));p.setOpaque(false);return p;}
     public static JPanel row(Component... components){JPanel p=new JPanel(new Wrap(FlowLayout.LEFT,px(8),px(5)));p.setOpaque(false);p.setAlignmentX(Component.LEFT_ALIGNMENT);for(Component c:components)p.add(c);return p;}
-    public static JLabel label(String text,int size,Color color){JLabel l=new JLabel(text);l.setFont(font(size,size>=18?Font.BOLD:Font.PLAIN));l.setForeground(color);l.setAlignmentX(Component.LEFT_ALIGNMENT);return l;}
-    public static JTextArea paragraph(String text){JTextArea a=new JTextArea(text){@Override public Dimension getPreferredSize(){Container p=getParent();int w=p==null?700:p.getWidth()-p.getInsets().left-p.getInsets().right;if(w<80)w=700;FontMetrics fm=getFontMetrics(getFont());int lines=0;for(String line:getText().split("\\n",-1)){int length=0;lines++;for(String word:line.split(" ")){int width=fm.stringWidth(word+" ");if(length>0&&length+width>w){lines++;length=0;}length+=width;}}return new Dimension(w,lines*fm.getHeight()+6);}@Override public Dimension getMaximumSize(){return new Dimension(getPreferredSize().width,getPreferredSize().height);}@Override public Dimension getMinimumSize(){return new Dimension(1,getFontMetrics(getFont()).getHeight()+6);}};a.setMargin(new Insets(0,0,0,0));a.setFont(font(13,0));a.setForeground(MUTED);a.setOpaque(false);a.setLineWrap(true);a.setWrapStyleWord(true);a.setEditable(false);a.setFocusable(true);int rows=0;for(String line:text.split("\n",-1))rows+=Math.max(1,(line.length()+84)/85);a.setRows(Math.min(rows,80));a.setMaximumSize(new Dimension(Integer.MAX_VALUE,px(Math.min(rows,80)*21+8)));a.setAlignmentX(Component.LEFT_ALIGNMENT);return a;}
-    public static JPanel card(){JPanel p=column();p.setOpaque(true);p.setBackground(CARD);p.setBorder(new CompoundBorder(new LineBorder(LINE,1,true),new EmptyBorder(px(18),px(18),px(18),px(18))));p.setAlignmentX(Component.LEFT_ALIGNMENT);return p;}
+    public static JLabel label(String text,int size,Color color){JLabel l=new JLabel(text,SwingConstants.LEFT);l.setFont(font(size,size>=18?Font.BOLD:Font.PLAIN));l.setForeground(color);l.setAlignmentX(Component.LEFT_ALIGNMENT);return l;}
+    public static JTextArea paragraph(String text){JTextArea a=new JTextArea(text){@Override public Dimension getPreferredSize(){Container p=getParent();int w=p==null?700:p.getWidth()-p.getInsets().left-p.getInsets().right;if(w<80)w=700;FontMetrics fm=getFontMetrics(getFont());int lines=0;for(String line:getText().split("\\n",-1)){int length=0;lines++;for(String word:line.split(" ")){int width=fm.stringWidth(word+" ");if(length>0&&length+width>w){lines++;length=0;}length+=width;}}return new Dimension(w,lines*fm.getHeight()+6);}@Override public Dimension getMaximumSize(){return new Dimension(getPreferredSize().width,getPreferredSize().height);}@Override public Dimension getMinimumSize(){return new Dimension(1,getFontMetrics(getFont()).getHeight()+6);}};a.setMargin(new Insets(0,0,0,0));a.setFont(font(15,0));a.setForeground(MUTED);a.setOpaque(false);a.setLineWrap(true);a.setWrapStyleWord(true);a.setEditable(false);a.setFocusable(false);a.setCaret(new javax.swing.text.DefaultCaret(){@Override protected void adjustVisibility(Rectangle r){}});int rows=0;for(String line:text.split("\n",-1))rows+=Math.max(1,(line.length()+84)/85);a.setRows(Math.min(rows,80));a.setMaximumSize(new Dimension(Integer.MAX_VALUE,px(Math.min(rows,80)*25+8)));a.setAlignmentX(Component.LEFT_ALIGNMENT);return a;}
+    public static JPanel card(){JPanel p=new RoundedCard();p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));p.setBorder(new EmptyBorder(px(23),px(25),px(23),px(25)));p.setAlignmentX(Component.LEFT_ALIGNMENT);return p;}
     public static void gap(JPanel p,int height){p.add(Box.createVerticalStrut(px(height)));}
-    public static JScrollPane scroll(Component content){JScrollPane s=new JScrollPane(content);s.setBorder(BorderFactory.createEmptyBorder());s.getViewport().setBackground(BG);s.setHorizontalScrollBarPolicy(content instanceof JTextArea a&&!a.getLineWrap()?ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED:ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);s.getVerticalScrollBar().setUnitIncrement(px(24));s.getVerticalScrollBar().setUI(new javax.swing.plaf.basic.BasicScrollBarUI(){@Override protected void configureScrollBarColors(){thumbColor=LINE;trackColor=BG;}@Override protected JButton createDecreaseButton(int o){JButton b=new JButton();b.setPreferredSize(new Dimension(0,0));return b;}@Override protected JButton createIncreaseButton(int o){return createDecreaseButton(o);}});return s;}
-    public static JButton button(String title,boolean accent,Runnable action){JButton b=new JButton(title);b.setFont(font(13,Font.BOLD));b.setForeground(accent?new Color(22,11,38):TEXT);b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setContentAreaFilled(false);b.setFocusPainted(false);b.setBorder(new EmptyBorder(px(10),px(13),px(10),px(13)));b.setUI(new BasicButtonUI(){@Override public void paint(Graphics g,JComponent c){Graphics2D g2=(Graphics2D)g.create();g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);int w=c.getWidth(),h=c.getHeight();Color start=accent?new Color(183,142,251):new Color(44,43,60),end=accent?new Color(144,94,214):new Color(31,31,44);if(b.getModel().isRollover())start=start.brighter();g2.setPaint(new GradientPaint(0,0,start,w,h,end));g2.fillRoundRect(1,1,w-3,h-3,px(8),px(8));g2.setColor(b.hasFocus()?PURPLE:LINE);g2.drawRoundRect(1,1,w-3,h-3,px(8),px(8));g2.dispose();super.paint(g,c);}});b.addActionListener(e->action.run());return b;}
+    public static JScrollPane scroll(Component content){JScrollPane s=new JScrollPane(content);s.setBorder(BorderFactory.createEmptyBorder());s.getViewport().setBackground(BG);s.setHorizontalScrollBarPolicy(content instanceof JTextArea a&&!a.getLineWrap()?ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED:ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);s.getVerticalScrollBar().setUnitIncrement(px(24));s.getVerticalScrollBar().setUI(new javax.swing.plaf.basic.BasicScrollBarUI(){@Override protected void configureScrollBarColors(){thumbColor=LINE;trackColor=BG;}@Override protected JButton createDecreaseButton(int o){JButton b=new JButton();b.setPreferredSize(new Dimension(0,0));return b;}@Override protected JButton createIncreaseButton(int o){return createDecreaseButton(o);}});SwingUtilities.invokeLater(()->s.getViewport().setViewPosition(new Point(0,0)));return s;}
+    public static ImageIcon icon(String name,int size){try{Image source=ImageIO.read(Theme.class.getResource("/assets/icons/"+name+".png"));return new ImageIcon(source.getScaledInstance(px(size),px(size),Image.SCALE_SMOOTH));}catch(Exception ex){return null;}}
+    public static <T> JComboBox<T> combo(JComboBox<T> box){
+        box.setFont(font(15,0));box.setForeground(TEXT);box.setBackground(new Color(38,42,61));box.setOpaque(false);box.setFocusable(true);
+        box.setBorder(new CompoundBorder(new LineBorder(LINE,1,true),new EmptyBorder(px(5),px(10),px(5),px(8))));
+        box.setUI(new BasicComboBoxUI(){@Override protected JButton createArrowButton(){JButton arrow=new JButton(){@Override protected void paintComponent(Graphics g){Graphics2D a=(Graphics2D)g.create();a.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);a.setColor(PURPLE);int x=getWidth()/2,y=getHeight()/2;a.setStroke(new BasicStroke(2.2f,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));a.drawLine(x-5,y-2,x,y+3);a.drawLine(x,y+3,x+5,y-2);a.dispose();}};arrow.setOpaque(false);arrow.setContentAreaFilled(false);arrow.setBorderPainted(false);arrow.setPreferredSize(new Dimension(px(30),px(32)));return arrow;}});
+        box.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){JLabel item=(JLabel)super.getListCellRendererComponent(list,value,index,selected,focus);item.setFont(font(15,0));item.setForeground(TEXT);item.setBackground(selected?new Color(77,57,113):new Color(35,39,57));item.setBorder(new EmptyBorder(px(9),px(12),px(9),px(12)));return item;}});
+        return box;
+    }
+    public static JButton navButton(String title,String iconName,Runnable action){
+        JButton b=new JButton(title,icon(iconName,20));b.setFont(font(15,Font.PLAIN));b.setForeground(MUTED);b.setIconTextGap(px(15));b.setHorizontalAlignment(SwingConstants.LEFT);b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setContentAreaFilled(false);b.setFocusPainted(false);b.setBorder(new EmptyBorder(px(12),px(15),px(12),px(15)));
+        b.setUI(new BasicButtonUI(){@Override public void paint(Graphics g,JComponent c){Graphics2D a=(Graphics2D)g.create();a.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);boolean selected=Boolean.TRUE.equals(b.getClientProperty("selectedNav")),hover=b.getModel().isRollover();if(selected||hover){a.setColor(selected?new Color(72,51,106):new Color(40,44,63));a.fillRoundRect(0,0,c.getWidth(),c.getHeight(),px(12),px(12));}if(selected){a.setColor(PURPLE);a.fillRoundRect(0,px(8),px(4),c.getHeight()-px(16),px(4),px(4));}b.setForeground(selected?TEXT:MUTED);a.dispose();super.paint(g,c);}});b.addActionListener(e->action.run());return b;
+    }
+    public static JButton button(String title,boolean accent,Runnable action){
+        JButton b=new JButton(title);b.setFont(font(15,Font.BOLD));b.setForeground(accent?new Color(25,16,43):TEXT);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));b.setContentAreaFilled(false);b.setRolloverEnabled(true);b.setFocusPainted(false);
+        b.setBorder(new EmptyBorder(px(13),px(20),px(13),px(20)));
+        b.setUI(new BasicButtonUI(){@Override protected void paintText(Graphics g,AbstractButton button,Rectangle area,String text){Graphics2D a=(Graphics2D)g.create();a.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);a.setFont(button.getFont());a.setColor(button.isEnabled()?button.getForeground():MUTED);BasicGraphicsUtils.drawStringUnderlineCharAt(a,text,button.getDisplayedMnemonicIndex(),area.x,area.y+a.getFontMetrics().getAscent());a.dispose();}@Override public void paint(Graphics g,JComponent c){
+            Graphics2D g2=(Graphics2D)g.create();g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+            int w=c.getWidth(),h=c.getHeight(),r=px(14);boolean hover=b.getModel().isRollover(),press=b.getModel().isPressed();
+            boolean selected=Boolean.TRUE.equals(b.getClientProperty("selectedNav"));
+            if(accent||hover||selected||b.hasFocus())for(int i=px(7);i>=1;i--){
+                int alpha=(accent?11:5)+(hover?7:0)+(selected?4:0);
+                g2.setColor(new Color(156,103,247,alpha));g2.fillRoundRect(i,i,w-i*2,h-i*2,r,r);
+            }
+            Color start=accent?new Color(200,166,255):selected?new Color(63,53,89):hover?new Color(62,58,87):new Color(42,45,65);
+            Color end=accent?new Color(157,107,235):selected?new Color(43,39,67):hover?new Color(44,42,68):new Color(34,37,55);
+            if(press){start=start.darker();end=end.darker();}
+            g2.setPaint(new GradientPaint(0,0,start,w,h,end));g2.fillRoundRect(px(3),px(3),w-px(6),h-px(6),r,r);
+            g2.setClip(px(3),px(3),w-px(6),(h-px(6))/2);
+            g2.setPaint(new GradientPaint(0,px(3),new Color(255,255,255,accent?125:34),0,h/2,new Color(255,255,255,accent?14:0)));
+            g2.fillRoundRect(px(3),px(3),w-px(6),h-px(6),r,r);g2.setClip(null);
+            g2.setColor(b.hasFocus()?MINT:accent?new Color(222,194,255):selected?PURPLE:LINE);
+            g2.drawRoundRect(px(3),px(3),w-px(7),h-px(7),r,r);g2.dispose();super.paint(g,c);
+        }});
+        b.addActionListener(e->action.run());return b;
+    }
+
+    private static final class RoundedCard extends JPanel {
+        RoundedCard(){setOpaque(false);}
+        @Override protected void paintComponent(Graphics g){Graphics2D a=(Graphics2D)g.create();a.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);int w=getWidth(),h=getHeight(),r=px(20);a.setPaint(new GradientPaint(0,0,new Color(32,37,55),w,h,CARD));a.fillRoundRect(0,0,w-1,h-1,r,r);a.setColor(LINE);a.drawRoundRect(0,0,w-1,h-1,r,r);a.dispose();super.paintComponent(g);}
+    }
 
     private static final class Column extends JPanel implements Scrollable {
         public Dimension getPreferredScrollableViewportSize(){return getPreferredSize();}

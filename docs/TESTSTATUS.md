@@ -1,20 +1,43 @@
-# Prüfstatus 0.3.0 Preview
+# Prüfstatus
 
 ## Bestätigt
 
-- Das öffentliche [v0.3.0-Release](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0) enthält acht Plattformpakete und SHA-256-Dateien.
-- Der [Plattformlauf 38703376018](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018) war auf Windows x64, macOS Intel und Apple Silicon sowie Linux x64 erfolgreich.
-- Alle vier Jobs kompilierten Java 21 und führten 128 Updater- und 941 App-Offline-Prüfungen aus.
-- Linux prüfte die Swing-Oberfläche unter Xvfb und startete den gebündelten Launcher mit sichtbarem Fenster.
-- Windows erzeugte MSI und portables ZIP, macOS je DMG und portables ZIP, Linux DEB und portables TAR.GZ. Die App-Launcher beantworteten `--version`.
+- Das öffentliche v0.3.0-Preview liegt mit acht Plattformpaketen und
+  SHA-256-Dateien auf [GitHub Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0).
+- Der [v0.3.0-Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018)
+  war auf Windows x64, macOS Intel/Apple Silicon und Linux x64 erfolgreich.
+- Der v0.4.0-Teststand wurde lokal unter Windows mit Java 21 kompiliert.
+  128 Updater- und 941 App-Prüfungen bestanden.
+- Die native WPF-Oberfläche wurde unter Windows sichtbar gerendert und bedient:
+  Übersicht, Einstellungen, Profilwahl, Quick Start mit neun Schritten und
+  Zurück/Weiter sowie die neu geordnete Community-Ansicht. Die aktuellen
+  README-Bilder stammen aus diesem WPF-Lauf. Die früheren 46 UI-Prüfschritte
+  betrafen noch die Java-Oberfläche.
+- Ein portables Windows-x64-ZIP und ein echtes, unsigniertes MSIX-Testpaket
+  wurden aus dem neuen Stand lokal erstellt. Beide SHA-256-Prüfsummen stimmen.
+  Die gebündelte EXE wurde als sichtbares Windows-Fenster gestartet.
+- Der private WPF-Vorlauf war in allen vier Jobs erfolgreich. Windows erzeugte MSI, portables ZIP und
+  unsigniertes MSIX; macOS und Linux erzeugten ihre Java-basierten Pakete.
+  Alle vier Actions-Artefakte wurden heruntergeladen; ihre Archiv-Digests und
+  die SHA-256-Dateien aller neun Pakete stimmen.
+- Die öffentliche RuhrpottZ-Statusseite antwortete mit HTTP 200. Die WPF-App
+  zeigte daraus live Status, Adresse, Spieler, Karte, Version und Modzahl.
 
-## Offen
+## Noch offen
 
-- Systemweite Installation aller Pakete und vollständige GUI-Bedienung auf Windows und macOS.
-- Vollständiger Live-Update- und Installationszyklus.
-- Spieltest mit der konkreten Project-Zomboid-Version, Mods, Multiplayer und AMP.
-- Erfolgreicher Liveabruf des RuhrpottZ-Serverstatus.
-- Windows-Herausgebersignierung und macOS-Notarisierung.
+- Die v0.4.0-Paketinstaller wurden noch nicht systemweit installiert.
+- Microsoft-Store-Paketidentität, Signierung und Store-Freigabe fehlen.
+- Der vollständige Live-Update- und Installationszyklus sowie ein echter
+  Spieltest mit Project Zomboid, AMP und Mods sind nicht belegt.
+- Die neue UI-Fassung ist auf den anderen Plattformen noch nicht installiert
+  oder dort visuell begutachtet worden.
 
-Ein erfolgreicher Build oder Screenshot ist kein Nachweis für eine erfolgreiche
-Installation oder das Verhalten auf einem produktiven Spielserver.
+Ein Build oder Screenshot ist kein Nachweis für eine erfolgreiche Installation
+oder für das Verhalten auf einem produktiven Spielserver.
+
+## Öffentlicher Release-Nachweis
+
+Der [Release-Workflow](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml)
+baut den Tag `v0.4.0` auf Windows, macOS Intel/Apple Silicon und Linux erneut.
+Die [Release-Seite](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0)
+wird erst nach erfolgreicher Matrix und SHA-256-Prüfung aller neun Pakete veröffentlicht.

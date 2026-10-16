@@ -7,12 +7,12 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 
 def run(*args: str) -> str:
     result = subprocess.run(args, cwd=ROOT, text=True, encoding='utf-8', errors='replace',
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-    print(result.stdout, end='')
+    print(result.stdout.encode(sys.stdout.encoding or 'utf-8', errors='replace').decode(sys.stdout.encoding or 'utf-8'), end='')
     if result.returncode:
         raise RuntimeError(f'{args[0]} failed with exit code {result.returncode}')
     return result.stdout

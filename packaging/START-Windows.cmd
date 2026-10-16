@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-set "APP=%~dp0PZ-Server-Architect-0.3.0.jar"
+set "APP=%~dp0PZ-Server-Architect-0.4.0.jar"
 set "JAVA=java.exe"
 set "JAVAW=javaw.exe"
 if defined JAVA_HOME if exist "%JAVA_HOME%\bin\java.exe" (

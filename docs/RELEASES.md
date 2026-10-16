@@ -1,51 +1,48 @@
-# Desktop-Releases
+# Build- und Release-Ablauf
 
-Das öffentliche Repository führt freigegebene Stände auf `main` und stellt
-versionierte Pakete über [GitHub Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases) bereit.
-Unveröffentlichte Entwicklung liegt auf `test` in einem separaten privaten
-Repository. GitHub kennt keine privaten Branches innerhalb eines öffentlichen
-Repositorys. Das [v0.3.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0)
-ist tatsächlich veröffentlicht.
+`main` im [öffentlichen Repository](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool)
+enthält veröffentlichte Stände. Unveröffentlichte Arbeit liegt auf `test` im
+separaten privaten Repository. GitHub verwaltet Sichtbarkeit je Repository;
+ein privater Branch in einem öffentlichen Repository ist nicht möglich.
 
-Die App-Version ist 0.3.0 Preview. Die vorhandene GitHub-only-Updatebibliothek ist
-Version 0.2.0; diese beiden Versionen werden nicht gleichgesetzt.
+## Automatische Pakete
 
-`tools/build.py` baut die eigentliche App und führt die beiden Offline-Testpakete
-aus. `tools/package.py` erzeugt ein natives App-Image mit Laufzeit und optional
-einen Installer. Die Paketierung erfolgt auf dem jeweiligen Betriebssystem.
+Jeder Push nach `main` oder `test` und jeder Pull Request führt die vier
+Plattformjobs aus:
 
-Die CI erstellt auf Windows x64, Linux x64, macOS Intel und macOS Apple Silicon
-je einen nativen Installer und ein portables Paket mit Java-Laufzeit. Der
-Tag `v0.3.0` startet dieselbe Matrix erneut. Nur wenn alle vier Jobs erfolgreich
-sind und alle acht Pakete samt SHA-256-Dateien vorliegen und nachgerechnet wurden,
-veröffentlicht `desktop-release.yml` ein öffentliches **Prerelease**. Der
-Release-Job akzeptiert nur einen Commit, der in `main` enthalten ist, und
-überschreibt kein vorhandenes Release.
+| Plattform | Pakete |
+|---|---|
+| Windows x64 | MSI, portables ZIP, unsigniertes MSIX-Entwicklungspaket |
+| macOS Intel | DMG, portables ZIP |
+| macOS Apple Silicon | DMG, portables ZIP |
+| Linux x64 | DEB, portables TAR.GZ |
 
-Für den aktuellen v0.3.0-Tag ist dieser Ablauf erfolgreich abgeschlossen;
-die acht Pakete liegen auf der Release-Seite. Der erneute Plattformbau wurde
-auch unter [Actions](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions)
-nachgewiesen.
+Alle Pakete erhalten eine SHA-256-Datei. Die Buildjobs kompilieren Java 21 und
+führen die Offline-Prüfungen aus. Linux prüft zusätzlich die echte Oberfläche
+und den gebündelten Launcher unter Xvfb. Ein versionierter Tag `vX.Y.Z` auf
+einem Commit von `main` startet dieselbe Matrix erneut. Erst wenn alle neun
+Pakete und ihre Prüfsummen vollständig und korrekt sind, entsteht ein
+öffentliches Preview-Release. Ein vorhandenes Release wird nicht überschrieben.
 
-Der Updater erwartet für stabile Versionen taggebundene Assets:
-`PZ-Server-Architect-VERSION-windows-x64.msi`,
-`PZ-Server-Architect-VERSION-macos-x64.dmg`,
-`PZ-Server-Architect-VERSION-macos-arm64.dmg`,
-`PZ-Server-Architect-VERSION-linux-x64.deb`.
-Weitere CPU-Kombinationen erst nach entsprechendem echten Build ergänzen.
+Die stabile Updateprüfung liest ausschließlich GitHub Releases. Sie ignoriert
+Preview-Releases und verwendet nur die passenden versionierten Installer.
+JARs und portable Archive sind keine automatischen Updateinstaller.
 
-Die portablen Archive und Java-JARs sind keine automatischen Installerpakete.
-Ein Prerelease wird vom stabilen App-Updater nicht automatisch geladen; die
-Preview ist über die GitHub-Release-Seite manuell verfügbar.
-Stabile Releases verwenden vMAJOR.MINOR.PATCH, enthalten alle freigegebenen
-Plattformdateien, Changelog und SHA-256-Digests aus GitHub. Source-only-/SDK-Tags
-oder einzelne Commits lösen keine App-Updates aus.
+## Windows MSIX
 
-Für Windows-MSI benötigt jpackage 21 kompatible WiX-Tools. Der Windows-2022-
-Runner stellt WiX 3.14 bereit; der Workflow setzt dessen Pfad vor der Paketierung.
-Apples Paketversionsregel erlaubt keine führende Null. Deshalb tragen macOS-
-Paketmetadaten `1.3.0`, während App-Version, Dateinamen und Release-Tag `0.3.0`
-bleiben.
-macOS-Pakete können unsigniert beziehungsweise ad-hoc-signiert sein. Sicherheits-
-funktionen nicht deaktivieren; signierte/notarisierte öffentliche Pakete bleiben
-als gesonderte Freigabeaufgabe offen.
+Das Windows-App-Image wird mit MakeAppx aus dem Windows SDK verpackt. Das
+Entwicklungspaket heißt `*-dev-unsigned.msix` und enthält eine lokale
+Entwicklungsidentität. Es ist ein echtes MSIX, aber ohne vertrauenswürdige
+Signatur nicht als Direktinstallation freigegeben. Für eine spätere
+Microsoft-Store-Einreichung die reservierten Werte `Package/Identity/Name` und
+`Package/Identity/Publisher` als `MSIX_IDENTITY_NAME` und `MSIX_PUBLISHER` im
+Build setzen und das Paket über Partner Center einreichen. Die Reservierung,
+Store-Zertifizierung und Veröffentlichung sind derzeit offen.
+
+Für sofortiges Testen unter Windows das portable ZIP vollständig entpacken und
+`PZServerArchitect.exe` starten. MSI und ZIP gehören zum
+[v0.4.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0).
+Für macOS bleiben Herausgebersignatur und Notarisierung offen.
+
+macOS-Paketmetadaten verwenden wegen der Apple-Versionsregel `1.4.0`;
+App-Version, Dateinamen und Release-Tag bleiben `0.4.0`.

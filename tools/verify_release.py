@@ -5,9 +5,9 @@ import shutil
 import sys
 from pathlib import Path
 
-VERSION = '0.3.0'
+from build import VERSION
 TARGETS = {
-    'windows-x64': ('msi', 'portable.zip'),
+    'windows-x64': ('msi', 'portable.zip', 'dev-unsigned.msix'),
     'macos-x64': ('dmg', 'portable.zip'),
     'macos-arm64': ('dmg', 'portable.zip'),
     'linux-x64': ('deb', 'portable.tar.gz'),
@@ -21,13 +21,13 @@ def main() -> None:
     if not source.is_dir() or output.exists():
         raise RuntimeError('Artifact directory missing or release output already exists')
     expected = {
-        f'PZ-Server-Architect-{VERSION}-{target}-{kind}' if kind.startswith('portable') else
+        f'PZ-Server-Architect-{VERSION}-{target}-{kind}' if kind.startswith(('portable', 'dev-unsigned')) else
         f'PZ-Server-Architect-{VERSION}-{target}.{kind}'
         for target, kinds in TARGETS.items() for kind in kinds
     }
     found = {}
     for path in source.rglob('*'):
-        if path.is_file() and path.name.endswith(('.msi', '.dmg', '.deb', '.zip', '.tar.gz', '.sha256')):
+        if path.is_file() and path.name.endswith(('.msi', '.dmg', '.deb', '.zip', '.tar.gz', '.msix', '.sha256')):
             if path.name in found:
                 raise RuntimeError('Duplicate asset: ' + path.name)
             found[path.name] = path
@@ -46,6 +46,11 @@ def main() -> None:
     output.mkdir()
     for name, path in found.items():
         shutil.copy2(path, output / name)
+    for source_name, alias in (
+        (f'PZ-Server-Architect-{VERSION}-windows-x64.msi', 'PZ-Server-Architect-windows-x64.msi'),
+        (f'PZ-Server-Architect-{VERSION}-windows-x64-portable.zip', 'PZ-Server-Architect-windows-x64-portable.zip'),
+    ):
+        shutil.copy2(found[source_name], output / alias)
     (output / 'SHA256SUMS.txt').write_text('\n'.join(checksums) + '\n', encoding='ascii')
     print(f'PASS: {len(expected)} native/portable packages and SHA-256 sidecars verified.')
 

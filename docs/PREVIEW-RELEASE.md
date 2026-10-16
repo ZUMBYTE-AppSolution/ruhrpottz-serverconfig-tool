@@ -1,28 +1,44 @@
-# PZ Server Architect 0.3.0 Preview
+# PZ Server Architect 0.4.0 Preview
 
-Erste bedienbare native Java-Desktopoberfläche mit 360 Katalogeinträgen, neutralen
-Vorlagen, Quick Start, Profilen, Import/Export und GitHub-only-Updater.
+Die Windows-App verwendet jetzt eine native WPF-Oberfläche mit lesbarer
+Systemschrift, dunklen Buttons, linksbündiger Navigation und gestalteten Dropdowns.
+Quick Start führt in einem eigenen Fenster durch neun erklärte Schritte mit
+Zurück/Weiter und einer Vorschau vor der Übernahme.
 
-**Vorabversion, nicht für ungeprüfte Übernahme auf produktive Server.**
-Spielbuild, Modkombination, Paketinstallation und vollständiger Updatezyklus
-müssen auf den angebotenen Plattformen kontrolliert werden. Ein erfolgreicher
-Build ist kein Beleg für einen erfolgreichen Spiel- oder Installationslauf.
+Profile lassen sich oben direkt wechseln oder neu anlegen. Der Editor bietet
+360 erklärte Katalogeinträge in 17 Bereichen, Suche, acht Vorlagen, Import,
+Änderungsprüfung und Export. Der RuhrpottZ-Livestatus zeigt Status, Adresse,
+Spieler, Karte, Version und Mods; er wird alle 15 Sekunden aktualisiert.
+Ein eigener Discord-Button öffnet die Community-Einladung.
 
-Portable Ausgaben enthalten die Java-Laufzeit. Das gesamte Paket entpacken.
-Nicht lediglich eine Launcherdatei aus ihrem App-Verzeichnis herauskopieren.
-Windows wird als MSI und portables ZIP, macOS für Intel und Apple Silicon als
-DMG und portables ZIP, Linux x64 als DEB und portables TAR.GZ angeboten.
-Alle Ausgaben enthalten die benötigte Java-Laufzeit. SHA-256-Dateien und eine
-gemeinsame SHA256SUMS.txt liegen bei. Der Linux-Launcher wurde unter Xvfb mit
-sichtbarem App-Fenster geprüft; Windows/macOS-Launcher wurden beim Build mit
---version gestartet. Die Installer wurden nicht systemweit installiert.
-Die macOS-Paketmetadaten verwenden wegen Apples Versionsregel 1.3.0; die
-Produktversion und der GitHub-Tag bleiben 0.3.0.
-macOS-Pakete sind nicht als mit Apple-Herausgeberzertifikat signiert/notarisiert
-freigegeben. Betriebssystem-Sicherheitsfunktionen nicht deaktivieren.
+## Downloads
 
-Vorabversionen werden vom stabilen Auto-Updater nicht automatisch heruntergeladen.
-Diese Preview wird manuell über die GitHub-Release-Seite bezogen.
-Changelog, Handbuch und Prüfgrenzen befinden sich im Repository.
+| Plattform | Pakete |
+|---|---|
+| Windows x64 · native WPF-App | MSI, portables ZIP, unsigniertes MSIX-Testpaket |
+| macOS Intel · Java-Oberfläche | DMG, portables ZIP |
+| macOS Apple Silicon · Java-Oberfläche | DMG, portables ZIP |
+| Linux x64 · Java-Oberfläche | DEB, portables TAR.GZ |
 
-Copyright by Zumbyte - Appsolution | www.zumbyte.de
+Die benötigten Laufzeiten sind enthalten. Zum sofortigen Windows-Test das
+portable ZIP vollständig entpacken und `PZServerArchitect.exe` öffnen.
+Jedes Plattformpaket besitzt eine SHA-256-Datei; `SHA256SUMS.txt` enthält die
+Prüfsummen der gesamten Plattformmatrix.
+
+## Bekannte Grenzen
+
+Das MSIX verwendet bis zur Reservierung im Microsoft Partner Center eine
+Entwicklungsidentität. Es ist kein Store-zugelassenes oder vertrauenswürdig
+signiertes Installationspaket. Windows-Herausgebersignierung und
+macOS-Notarisierung sind noch offen.
+
+Die Releasekette veröffentlicht nur nach erfolgreichem Plattformbau und
+Prüfsummenvergleich. Der Windows-Starter und die Oberfläche wurden getestet;
+systemweite Installerinstallationen, ein vollständiger Updatezyklus und
+Spieltests mit konkreten PZ-Versionen, AMP und Mods stehen noch aus.
+
+Profile und Konfigurationen bleiben lokal. Es gibt keinen Masterserver und
+keinen Konfigurations-Upload. Vorabversionen werden vom stabilen Auto-Updater
+nicht automatisch installiert.
+
+Weitere Änderungen: [Changelog](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/blob/v0.4.0/CHANGELOG.md).

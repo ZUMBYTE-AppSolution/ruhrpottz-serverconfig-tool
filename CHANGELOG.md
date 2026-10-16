@@ -40,7 +40,7 @@
 - Die WPF-App kompiliert unter .NET 10 ohne Warnungen. Quick Start, Profilwechsel, Einstellungen und der neu gestaltete Live-Status wurden in einem laufenden Windows-Fenster geprüft.
 - Windows x64 als portables WPF-ZIP und unsigniertes MSIX-Testpaket lokal neu gebaut und mit gebündelter EXE gestartet.
 - Die öffentliche RuhrpottZ-Statusseite wurde mit dem WPF-Client live gelesen. Der angezeigte Status stammt aus dieser externen Serverliste.
-- Der private WPF-Vorlauf bestand auf Windows, Linux und beiden macOS-Architekturen. Alle neun Pakete wurden heruntergeladen und anhand ihrer SHA-256-Dateien geprüft. Der öffentliche [Release-Workflow](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml) wiederholt die Plattformmatrix und prüft alle Pakete vor der Veröffentlichung.
+- Der öffentliche [Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38968291434) bestand auf Windows, Linux und beiden macOS-Architekturen und veröffentlichte v0.4.0 Preview. Alle neun Paketprüfsummen stimmen mit den öffentlichen GitHub-Upload-Digests überein.
 
 ## [0.3.0] - 2026-10-15 · öffentliches Preview-Release
 

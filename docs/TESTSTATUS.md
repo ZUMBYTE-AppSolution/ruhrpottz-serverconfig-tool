@@ -2,6 +2,14 @@
 
 ## Bestätigt
 
+- Das öffentliche [v0.4.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0)
+  wurde am 16. Oktober 2026 veröffentlicht. Der
+  [Release-Lauf 38968291434](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38968291434)
+  bestand mit vier Plattformjobs und erfolgreichem Veröffentlichungsjob.
+- Alle neun v0.4.0-Pakete, neun SHA-256-Dateien, `SHA256SUMS.txt` und zwei
+  Windows-Download-Aliase sind öffentlich erreichbar. Die Prüfsummen der Pakete
+  stimmen mit den von GitHub erfassten Upload-Digests überein; beide Aliase
+  enthalten dieselben Bytes wie ihre versionierten Dateien.
 - Das öffentliche v0.3.0-Preview liegt mit acht Plattformpaketen und
   SHA-256-Dateien auf [GitHub Releases](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.3.0).
 - Der [v0.3.0-Plattformlauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38703376018)
@@ -34,10 +42,3 @@
 
 Ein Build oder Screenshot ist kein Nachweis für eine erfolgreiche Installation
 oder für das Verhalten auf einem produktiven Spielserver.
-
-## Öffentlicher Release-Nachweis
-
-Der [Release-Workflow](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml)
-baut den Tag `v0.4.0` auf Windows, macOS Intel/Apple Silicon und Linux erneut.
-Die [Release-Seite](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0)
-wird erst nach erfolgreicher Matrix und SHA-256-Prüfung aller neun Pakete veröffentlicht.

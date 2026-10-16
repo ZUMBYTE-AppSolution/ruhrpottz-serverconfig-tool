@@ -54,7 +54,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-Für v0.4.0 wurde die Windows-Oberfläche als WPF-App neu umgesetzt. Der private Vorlauf bestand auf allen vier Plattformen; alle neun Pakete wurden anhand ihrer SHA-256-Dateien geprüft. Der [öffentliche Release-Workflow](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml) baut den versionierten Stand erneut und veröffentlicht erst nach vollständiger Paketprüfung. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+Für v0.4.0 wurde die Windows-Oberfläche als WPF-App neu umgesetzt. Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38968291434) bestand auf allen vier Plattformen und veröffentlichte [v0.4.0 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0). Alle neun Pakete und ihre Prüfsummen wurden überprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

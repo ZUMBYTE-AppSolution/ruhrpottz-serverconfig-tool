@@ -1,6 +1,6 @@
 # Roadmap
 
-## In der Desktop-Preview 0.4.0 enthalten
+## In der Desktop-Preview 0.4.1 enthalten
 
 Native WPF-Oberfläche unter Windows und Java-Swing-Oberfläche auf macOS/Linux,
 mit 360 Katalogeinträgen, typisierten Controls und Werte-Hilfen,

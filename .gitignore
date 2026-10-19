@@ -3,6 +3,8 @@
 /publish-work/
 /src/windows/**/bin/
 /src/windows/**/obj/
+/src/test/windows/**/bin/
+/src/test/windows/**/obj/
 *.class
 *.log
 *.part

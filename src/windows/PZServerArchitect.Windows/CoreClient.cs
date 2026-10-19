@@ -16,12 +16,12 @@ internal sealed class CoreClient : IDisposable
         var jar = Environment.GetEnvironmentVariable("PZ_ARCHITECT_CORE_JAR");
         if (string.IsNullOrWhiteSpace(jar))
         {
-            jar = Path.Combine(baseDir, "engine", "PZ-Server-Architect-0.4.0.jar");
+            jar = Path.Combine(baseDir, "engine", "PZ-Server-Architect-0.4.1.jar");
             if (!File.Exists(jar))
             {
                 var dir = new DirectoryInfo(baseDir);
                 while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "tools", "build.py"))) dir = dir.Parent;
-                if (dir is not null) jar = Path.Combine(dir.FullName, "build", "PZ-Server-Architect-0.4.0.jar");
+                if (dir is not null) jar = Path.Combine(dir.FullName, "build", "PZ-Server-Architect-0.4.1.jar");
             }
         }
         if (!File.Exists(jar)) throw new FileNotFoundException("Die Konfigurationslogik fehlt. Bitte die App vollständig entpacken.", jar);

@@ -1,9 +1,14 @@
-# PZ Server Architect 0.4.0 Preview
+# PZ Server Architect 0.4.1 Preview
 
-Die Windows-App verwendet jetzt eine native WPF-Oberfläche mit lesbarer
-Systemschrift, dunklen Buttons, linksbündiger Navigation und gestalteten Dropdowns.
-Quick Start führt in einem eigenen Fenster durch neun erklärte Schritte mit
-Zurück/Weiter und einer Vorschau vor der Übernahme.
+Dieses Update behebt die Werteübernahme und das Zurückspringen der Einstellungsliste.
+Auswahlfelder werden sofort übernommen; Text-, Zahlen- und Kennwortfelder nach
+350 Millisekunden Eingabepause. Der zusätzliche Übernehmen-Button entfällt.
+Die letzte Eingabe wird auch vor einem Seitenwechsel, Speichern oder Export übernommen.
+
+Die Windows-App behält beim Bearbeiten Liste, Reihenfolge, Auswahl, Fokus und
+Cursor. Rückgängig/Wiederholen und das Zurücksetzen einzelner Werte springen
+ebenfalls nicht mehr an den Anfang. Ungültige Zwischenwerte werden direkt am
+Feld angezeigt und überschreiben den letzten gültigen Wert nicht.
 
 Profile lassen sich oben direkt wechseln oder neu anlegen. Der Editor bietet
 360 erklärte Katalogeinträge in 17 Bereichen, Suche, acht Vorlagen, Import,
@@ -32,8 +37,10 @@ Entwicklungsidentität. Es ist kein Store-zugelassenes oder vertrauenswürdig
 signiertes Installationspaket. Windows-Herausgebersignierung und
 macOS-Notarisierung sind noch offen.
 
-Die Releasekette veröffentlicht nur nach erfolgreichem Plattformbau und
-Prüfsummenvergleich. Der Windows-Starter und die Oberfläche wurden getestet;
+Lokal bestanden 35 WPF-Editorprüfungen, 55 Prüfungen der Java-Oberfläche sowie
+128 Updater- und 941 App-Prüfungen. Die Releasekette wiederholt die Prüfungen
+und veröffentlicht nur nach erfolgreichem Plattformbau und Prüfsummenvergleich.
+Der Windows-Starter und die Oberfläche wurden getestet;
 systemweite Installerinstallationen, ein vollständiger Updatezyklus und
 Spieltests mit konkreten PZ-Versionen, AMP und Mods stehen noch aus.
 
@@ -41,4 +48,4 @@ Profile und Konfigurationen bleiben lokal. Es gibt keinen Masterserver und
 keinen Konfigurations-Upload. Vorabversionen werden vom stabilen Auto-Updater
 nicht automatisch installiert.
 
-Weitere Änderungen: [Changelog](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/blob/v0.4.0/CHANGELOG.md).
+Weitere Änderungen: [Changelog](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/blob/v0.4.1/CHANGELOG.md).

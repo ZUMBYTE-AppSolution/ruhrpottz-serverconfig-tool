@@ -251,7 +251,7 @@ public partial class MainWindow
         if (updateNotes.Length > 0) { var notes = Text(updateNotes, 12, muted: true); notes.Margin = new Thickness(0, 13, 0, 0); panel.Children.Add(notes); }
         var links = Row(Action("Handbuch öffnen", OpenManual), Action("GitHub Releases", () => OpenUrl("https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases")), Action("Zumbyte", () => OpenUrl("https://www.zumbyte.de/")));
         links.Margin = new Thickness(0, 27, 0, 0); panel.Children.Add(links);
-        var info = Text("PZ Server Architect 0.4.0 Preview · Windows WPF\nProfil- und Konfigurationsdaten bleiben lokal. Es gibt keinen Masterserver und keinen Konfigurations-Upload.\n\nTastatur: Strg+S speichern · Strg+F suchen · Strg+E exportieren · Strg+Z/Y rückgängig/wiederholen", 13, muted: true);
+        var info = Text("PZ Server Architect 0.4.1 Preview · Windows WPF\nProfil- und Konfigurationsdaten bleiben lokal. Es gibt keinen Masterserver und keinen Konfigurations-Upload.\n\nTastatur: Strg+S speichern · Strg+F suchen · Strg+E exportieren · Strg+Z/Y rückgängig/wiederholen", 13, muted: true);
         info.Margin = new Thickness(0, 32, 0, 0); panel.Children.Add(info); return Card(panel, new Thickness(32));
     }
 

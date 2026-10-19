@@ -38,11 +38,46 @@ public final class UiSmoke {
             SwingUtilities.invokeAndWait(()->{JComboBox<?> profiles=children(app).stream().filter(c->c instanceof JComboBox<?> box&&box.getItemCount()>0&&Objects.toString(box.getItemAt(box.getItemCount()-1)).contains("Neues Profil")).map(c->(JComboBox<?>)c).findFirst().orElseThrow();profiles.setSelectedIndex(profiles.getItemCount()-1);ok(app.workspace.name.equals("Neues Profil"),"profile dropdown creates a new workspace");ok(profiles.getItemCount()>=2,"saved profile available for switching");profiles.setSelectedIndex(1);ok(app.workspace.name.equals("UI-Testprofil"),"profile dropdown opens a saved profile");});
             SwingUtilities.invokeAndWait(()->app.navigate("profiles"));capture(robot,out,"06-profile-saved");
 
+            autoCommitChecks(robot);
+
             SwingUtilities.invokeAndWait(()->{app.setSize(1040,760);app.navigate("wizard");});robot.waitForIdle();Thread.sleep(200);capture(robot,out,"05-small-window");ok(app.getWidth()==1040,"small window");
             System.out.println("PASS: "+checks+" UI assertions; real Swing window rendered and toggles operated in offline mode.");
         }finally{if(app!=null)SwingUtilities.invokeAndWait(app::closeForTest);try(var paths=Files.walk(data)){for(Path p:paths.sorted(Comparator.reverseOrder()).toList())Files.deleteIfExists(p);}}
     }
     private static JButton button(Container root,String text){return children(root).stream().filter(c->c instanceof JButton b&&text.equals(b.getText())).map(c->(JButton)c).findFirst().orElseThrow(()->new AssertionError("Button missing: "+text));}
+    private static void autoCommitChecks(Robot robot)throws Exception{
+        java.lang.reflect.Field listField=App.class.getDeclaredField("fieldList");listField.setAccessible(true);
+        JList<?>[] list={null};JTextField[] input={null};JViewport[] viewport={null};Point[] position={null};
+        SwingUtilities.invokeAndWait(()->{
+            app.navigate("all");
+            try{list[0]=(JList<?>)listField.get(app);}catch(ReflectiveOperationException ex){throw new RuntimeException(ex);}
+            for(int i=0;i<list[0].getModel().getSize();i++)if(((Catalog.Setting)list[0].getModel().getElementAt(i)).id.equals("ini:BloodSplatLifespanDays")){list[0].setSelectedIndex(i);list[0].ensureIndexIsVisible(i);break;}
+            input[0]=children(app).stream().filter(c->c instanceof JTextField t&&"Blutspuren, Serveroption".equals(t.getAccessibleContext().getAccessibleName())).map(c->(JTextField)c).findFirst().orElseThrow();
+            viewport[0]=((JScrollPane)SwingUtilities.getAncestorOfClass(JScrollPane.class,list[0])).getViewport();
+        });
+        robot.waitForIdle();Thread.sleep(100);
+        SwingUtilities.invokeAndWait(()->{
+            list[0].ensureIndexIsVisible(list[0].getSelectedIndex());
+            position[0]=viewport[0].getViewPosition();
+            ok(position[0].y>0,"autosave test begins after scrolling down");
+            ok(children(app).stream().noneMatch(c->c instanceof JButton b&&"Wert übernehmen".equals(b.getText())),"no per-value apply button");
+            input[0].setText("12");
+        });
+        Thread.sleep(550);robot.waitForIdle();
+        SwingUtilities.invokeAndWait(()->{
+            ok(app.workspace.is("ini","BloodSplatLifespanDays",new java.math.BigDecimal("12")),"text commits after a short pause");
+            ok(viewport[0].getViewPosition().equals(position[0]),"automatic edit preserves scroll position");
+            ok(input[0].isShowing(),"automatic edit keeps its input control");
+            children(app).stream().filter(c->c instanceof JButton b&&"Rückgängig".equals(b.getAccessibleContext().getAccessibleName())).map(c->(JButton)c).findFirst().orElseThrow().doClick();
+            try{ok(listField.get(app)==list[0],"undo keeps the settings list instance");}catch(ReflectiveOperationException ex){throw new RuntimeException(ex);}
+            ok(viewport[0].getViewPosition().equals(position[0]),"undo preserves scroll position");
+            JTextField edit=children(app).stream().filter(c->c instanceof JTextField t&&"Blutspuren, Serveroption".equals(t.getAccessibleContext().getAccessibleName())).map(c->(JTextField)c).findFirst().orElseThrow();
+            edit.setText("-");app.navigate("export");
+            ok(edit.isShowing(),"invalid intermediate input keeps editor visible");
+            edit.setText("13");app.navigate("export");
+            ok(app.workspace.is("ini","BloodSplatLifespanDays",new java.math.BigDecimal("13")),"navigation flushes final keystroke");
+        });
+    }
     private static JDialog waitDialog()throws Exception{return waitDialog("");}
     private static JDialog waitDialog(String title)throws Exception{for(int i=0;i<80;i++){JDialog[] result={null};SwingUtilities.invokeAndWait(()->{for(Window w:Window.getWindows())if(w instanceof JDialog d&&d.isShowing()&&d.getTitle().contains(title))result[0]=d;});if(result[0]!=null)return result[0];Thread.sleep(100);}throw new AssertionError("Dialog not shown: "+title);}
     private static void capture(Robot robot,Path out,String name)throws Exception{capture(robot,out,name,app);}

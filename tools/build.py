@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 def run(*args: str) -> str:
     result = subprocess.run(args, cwd=ROOT, text=True, encoding='utf-8', errors='replace',

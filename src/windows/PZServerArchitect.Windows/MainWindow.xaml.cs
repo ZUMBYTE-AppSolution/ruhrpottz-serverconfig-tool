@@ -51,7 +51,7 @@ public partial class MainWindow : Window
         Navigate(initial is null ? "home" : initial[7..]);
         statusTimer.Tick += async (_, _) => await RefreshServerStatus();
         if (Environment.GetCommandLineArgs().Contains("--smoke")) Loaded += (_, _) => Close();
-        else { statusTimer.Start(); _ = RefreshServerStatus(); Loaded += async (_, _) => await CheckUpdate(false); }
+        else if (!Environment.GetCommandLineArgs().Contains("--offline")) { statusTimer.Start(); _ = RefreshServerStatus(); Loaded += async (_, _) => await CheckUpdate(false); }
         PreviewKeyDown += (_, e) =>
         {
             bool control = (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) != 0;
@@ -89,6 +89,9 @@ public partial class MainWindow : Window
     private void Navigate_Click(object sender, RoutedEventArgs e) => Navigate((string)((Button)sender).Tag);
     private void Navigate(string next)
     {
+        if (!CommitSettingEdit()) return;
+        RememberSettingsPosition(); EndSettingEdit();
+        settingsList = null; refreshSettingsView = null;
         route = next;
         PageTitle.Text = next switch { "home" => "Übersicht", "wizard" => "Quick Start", "settings" => "Einstellungen", "profiles" => "Profile", "export" => "Prüfen & Export", "community" => "Community", _ => "Hilfe & Updates" };
         PageSubtitle.Text = next switch { "settings" => "Serverwerte bearbeiten, ohne die Orientierung zu verlieren", "community" => "Serverstatus und Discord an einem eigenen Ort", "wizard" => "Neun Entscheidungen, Schritt für Schritt", _ => $"Aktives Profil: {state.S("name")}{(state.B("dirty") ? " · ungespeichert" : "")}" };
@@ -116,18 +119,34 @@ public partial class MainWindow : Window
         if (!CanReplace()) { updatingPicker = true; ProfilePicker.SelectedIndex = 0; updatingPicker = false; return; }
         if (item.Id == "__new__") Mutate("new"); else Mutate("load", new { id = item.Id });
     }
-    private bool CanReplace() => !state.B("dirty") || MessageBox.Show(this, "Im aktuellen Profil gibt es ungespeicherte Änderungen. Zum Wechseln verwerfen?", "Profil wechseln", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+    private bool CanReplace() => CommitSettingEdit() && (!state.B("dirty") || MessageBox.Show(this, "Im aktuellen Profil gibt es ungespeicherte Änderungen. Zum Wechseln verwerfen?", "Profil wechseln", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes);
     private void Mutate(string command, object? args = null, string? next = null)
     {
-        try { state = core.Call(command, args); ReadState(); RefreshProfiles(); Navigate(next ?? route); Notice("Änderung übernommen"); }
+        if (command is "restore" or "unset") EndSettingEdit();
+        else if (!CommitSettingEdit()) return;
+        try
+        {
+            state = core.Call(command, args); ReadState();
+            if (route == "settings" && next is null && command is "undo" or "redo" or "restore" or "unset")
+                refreshSettingsView?.Invoke(true);
+            else { RefreshProfiles(); Navigate(next ?? route); }
+            Notice("Änderung übernommen");
+        }
         catch (Exception ex) { Error(ex); }
     }
     private void Save_Click(object sender, RoutedEventArgs e) => SaveProfile();
     private bool SaveProfile(bool copy = false)
     {
+        if (!CommitSettingEdit()) return false;
         var prompt = new ProfilePrompt(state.S("name") + (copy ? " (Kopie)" : ""), state.S("baseName")) { Owner = this };
         if (prompt.ShowDialog() != true) return false;
-        try { state = core.Call(copy ? "saveCopy" : "save", new { name = prompt.ProfileName, baseName = prompt.BaseName }); ReadState(); RefreshProfiles(); Navigate(route); Notice("Profil lokal gespeichert"); return true; }
+        try
+        {
+            state = core.Call(copy ? "saveCopy" : "save", new { name = prompt.ProfileName, baseName = prompt.BaseName });
+            ReadState(); RefreshProfiles();
+            if (route == "settings") refreshSettingsView?.Invoke(false); else Navigate(route);
+            Notice("Profil lokal gespeichert"); return true;
+        }
         catch (Exception ex) { Error(ex); return false; }
     }
     private void Notice(string message) => StatusText.Text = message;
@@ -149,8 +168,9 @@ public partial class MainWindow : Window
     private static ScrollViewer Scroll(UIElement child) => new() { Content = child, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
     protected override void OnClosing(CancelEventArgs e)
     {
+        if (!CommitSettingEdit()) { e.Cancel = true; return; }
         if (state.ValueKind != JsonValueKind.Undefined && state.B("dirty") && MessageBox.Show(this, "Ungespeicherte Änderungen verwerfen und App schließen?", "App schließen", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) { e.Cancel = true; return; }
-        statusTimer.Stop(); statusHttp.Dispose(); core.Dispose(); base.OnClosing(e);
+        EndSettingEdit(); statusTimer.Stop(); statusHttp.Dispose(); core.Dispose(); base.OnClosing(e);
     }
     private sealed record ProfileItem(string Id, string Name, string Updated) { public override string ToString() => Name; }
     private sealed record ServerSnapshot(string Status, string Address, string Players, string Map,

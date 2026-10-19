@@ -3,9 +3,9 @@
 <p align="center">Dein Project-Zomboid-Server. Deine Regeln.<br>Ein lokaler Konfigurator für verständliche Serverwerte, Profile und einen sicheren Export.</p>
 
 <p align="center">
-  <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/download/v0.4.0/PZ-Server-Architect-0.4.0-windows-x64.msi"><strong>Windows installieren</strong></a>
-  · <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/download/v0.4.0/PZ-Server-Architect-0.4.0-windows-x64-portable.zip">Windows portabel</a>
-  · <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0">Alle Plattformen</a>
+  <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/download/v0.4.1/PZ-Server-Architect-0.4.1-windows-x64.msi"><strong>Windows installieren</strong></a>
+  · <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/download/v0.4.1/PZ-Server-Architect-0.4.1-windows-x64-portable.zip">Windows portabel</a>
+  · <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1">Alle Plattformen</a>
 </p>
 <p align="center">
   <a href="https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases"><img alt="Release" src="https://img.shields.io/github/v/release/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool?include_prereleases&label=Release&color=a78bfa"></a>
@@ -13,9 +13,9 @@
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-lesen-6d28d9"></a>
 </p>
 
-> **v0.4.0 Preview:** Native WPF-Oberfläche für Windows x64; macOS Intel/Apple Silicon und Linux x64 verwenden die Java-Oberfläche. Die App arbeitet lokal und verändert keinen laufenden Server.
+> **v0.4.1 Preview:** Native WPF-Oberfläche für Windows x64; macOS Intel/Apple Silicon und Linux x64 verwenden die Java-Oberfläche. Die App arbeitet lokal und verändert keinen laufenden Server.
 
-![Native Windows-Übersicht in v0.4.0](docs/images/wpf-overview.png)
+![Native Windows-Übersicht in v0.4.1](docs/images/wpf-overview.png)
 
 ## Was du damit machen kannst
 
@@ -23,7 +23,7 @@
 |---|---|
 | **Schnell starten** | Eigenes Assistentenfenster mit neun erklärten Schritten, Zurück/Weiter und Änderungsvorschau. |
 | **Werte verstehen** | 360 erklärte Katalogeinträge in 17 Bereichen sowie importierte Modfelder. |
-| **Gezielt bearbeiten** | Suche, Themenauswahl, passende Eingaben und Auswahlfelder, Undo und Redo. |
+| **Gezielt bearbeiten** | Werte automatisch übernehmen, dabei Auswahl und Scrollposition behalten; Suche, Themenauswahl, Undo und Redo. |
 | **Profile behalten** | Oben direkt wechseln oder neu anlegen; lokal speichern, kopieren, umbenennen, wiederherstellen und als JSON übertragen. |
 | **Dateien sicher übernehmen** | INI und Sandbox-Lua importieren, prüfen und als neues ZIP exportieren. |
 | **Updates finden** | GitHub-Releases prüfen und passende Pakete nach Prüfsummenvergleich laden. |
@@ -35,7 +35,7 @@ Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkon
 
 ## Installation
 
-1. Lade das passende Paket von [v0.4.0 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
+1. Lade das passende Paket von [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
 2. Bei einem portablen Paket: **vollständig entpacken**, dann den enthaltenen App-Starter öffnen. Unter Windows heißt er `PZServerArchitect.exe`. Die benötigten Laufzeiten sind enthalten.
 3. Importiere dein zusammengehöriges `.ini`- und `_SandboxVars.lua`-Dateipaar oder beginne mit Quick Start.
 4. Prüfe die Änderungen und exportiere ein neues ZIP. Übernimm es erst nach einem Backup und einem Test mit deinem Spielbuild und deinen Mods.
@@ -54,7 +54,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-Für v0.4.0 wurde die Windows-Oberfläche als WPF-App neu umgesetzt. Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/38968291434) bestand auf allen vier Plattformen und veröffentlichte [v0.4.0 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0). Alle neun Pakete und ihre Prüfsummen wurden überprüft. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+v0.4.1 behebt die manuelle Werteübernahme und das Zurückspringen der Einstellungsliste. Lokal bestehen 35 Prüfungen am WPF-Editor und 55 an der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen. Die [Releasekette](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml) baut alle Plattformpakete erneut und prüft ihre SHA-256-Dateien vor der Veröffentlichung. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

@@ -10,6 +10,22 @@
 - Code-Signing und macOS-Notarisierung für direkte Verteilung vorbereiten.
 - Vollständige Installation und Updateübernahme auf allen Zielsystemen sowie Spieltest mit konkreter PZ-Version und Mods nachweisen.
 
+## [0.4.1] - 2026-10-19 · Preview
+
+### Korrigiert
+
+- Werte werden im Editor automatisch übernommen: Auswahlfelder direkt, Text-, Zahlen- und Kennwortfelder nach 350 Millisekunden Eingabepause. Der zusätzliche Übernehmen-Button entfällt auf Windows, macOS und Linux.
+- WPF schreibt Änderungen im Hintergrund und aktualisiert bestehende Zeilen. Listenposition, Reihenfolge, Auswahl, Eingabefokus und Cursor bleiben erhalten.
+- Rückgängig, Wiederholen, Originalwert und Schlüsselentfernung behalten die Liste an ihrer Position; beim Zurückkehren zur Einstellungsseite stellt WPF Auswahl und Scrollposition wieder her.
+- Vor Seitenwechsel, Profilwechsel, Speichern oder Export wird die letzte ausstehende Eingabe übernommen. Ungültige Zwischenwerte bleiben mit einem Hinweis im Feld; der letzte gültige Wert wird erhalten.
+- Noch nicht gesetzte Auswahlfelder zeigen „Nicht gesetzt“ und erzeugen beim bloßen Öffnen keine Änderung.
+
+### Geprüft
+
+- 35 Prüfungen mit echten WPF-Controls und lokaler Java-Logik für automatische Übernahme, Scrollposition, Fokus, Undo/Redo, ungültige Eingaben und Navigation.
+- 55 Prüfungen der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen bestanden.
+- Die WPF-Prüfung ist Teil des Windows-Jobs in GitHub Actions; die Java-Oberfläche wird unter Linux geprüft.
+
 ## [0.4.0] - 2026-10-16 · öffentliches Preview-Release
 
 ### Hinzugefügt

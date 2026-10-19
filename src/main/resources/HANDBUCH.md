@@ -1,4 +1,4 @@
-# PZ Server Architect 0.4.0 Preview
+# PZ Server Architect 0.4.1 Preview
 Copyright by Zumbyte - Appsolution | www.zumbyte.de
 
 ## Start
@@ -59,10 +59,13 @@ Java-Oberfläche gibt es dafür auch die Dropdown-Auswahl „Nicht gesetzt“.
 eine seitdem hinzugefügte Einstellung.
 
 Mehrfachauswahlen erhalten Dropdowns. Zahlen erhalten editierbare Felder mit
-Validierung. Unter Windows werden Werte mit „Übernehmen“ gespeichert;
-Text-/Zahlenfelder akzeptieren auch Enter. Vor dem Seitenwechsel die Eingabe
-übernehmen. Die Java-Oberfläche übernimmt gültige ausstehende Eingaben beim
-Seitenwechsel und verhindert den Wechsel bei ungültigen Werten. Originalkommentare mit eindeutig
+Validierung. Auswahlfelder werden sofort übernommen; Text-, Zahlen- und
+Kennwortfelder nach 350 Millisekunden Eingabepause. Enter oder ein Fokuswechsel
+übernimmt ausstehende Texte ebenfalls. Ein zusätzlicher Übernehmen-Button ist
+nicht nötig. Die Liste bleibt beim Bearbeiten an ihrer Position.
+Vor Seitenwechsel, Speichern und Export werden ausstehende Eingaben geprüft.
+Ungültige Zwischenwerte bleiben mit einem Hinweis im Feld, ohne den letzten
+gültigen Wert zu überschreiben. Originalkommentare mit eindeutig
 nummerierten `1 = ...`-Zeilen können eine Auswahlliste ergänzen/ersetzen; Min/Max-
 Angaben können Grenzen liefern. Kommentare selbst sind keine externe Verifikation.
 
@@ -177,9 +180,9 @@ unter Linux. Andere Linux-Paketmanager sind damit nicht automatisch abgedeckt.
 
 Ein ZIP/JAR der Preview ist kein automatisches App-Update. Ein Release muss erst
 vollständig gebaut, hochgeladen und als stabil veröffentlicht sein, damit es
-angeboten wird. v0.4.0 ist ein Preview-Release und wird deshalb manuell über
+angeboten wird. v0.4.1 ist ein Preview-Release und wird deshalb manuell über
 GitHub heruntergeladen. Der Editor arbeitet auch ohne Netzwerk. In der
-Java-Ausgabe unterbindet `--offline` in Testläufen Update- und Serverabfragen;
+Desktop-Ausgabe unterbindet `--offline` in Testläufen Update- und Serverabfragen;
 bewusst geöffnete Browserlinks bleiben eigene Aktionen.
 
 ## 8. RuhrpottZ und Serverstatus
@@ -203,7 +206,7 @@ Die Java-Oberfläche bietet eine UI-Größe von 90/100/110/125 Prozent nach
 App-Neustart. WPF verwendet die Windows-Anzeigeskalierung.
 
 Die native WPF-Oberfläche wurde unter Windows als echtes Fenster geprüft.
-Der v0.4.0-Vorlauf bestand auf Windows, macOS und Linux. Die öffentliche
+Der v0.4.1-Vorlauf bestand auf Windows, macOS und Linux. Die öffentliche
 Releasekette wiederholt die Plattformmatrix und prüft alle Paket-Prüfsummen.
 Ein Spieltest mit Project Zomboid, deiner Modkombination und
 AMP steht aus. Aktuelle Ergebnisse: docs/TESTSTATUS.md.

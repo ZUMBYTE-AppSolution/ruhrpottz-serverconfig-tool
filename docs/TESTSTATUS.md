@@ -1,5 +1,18 @@
 # Prüfstatus
 
+## v0.4.1 · lokal bestätigt
+
+- 128 Updater- und 941 App-Prüfungen bestanden.
+- 35 Prüfungen am realen WPF-Editor mit lokalem Java-Kern bestanden: automatische
+  Übernahme, stabile Listenposition und Reihenfolge, Fokus/Cursor, Undo/Redo,
+  ungültige Eingaben, Zurücksetzen und Seitenwechsel mit ausstehender Eingabe.
+- 55 Java-UI-Prüfungen bestanden, einschließlich automatischer Werteübernahme
+  und Scrollposition bei Bearbeitung und Rückgängig.
+- Die automatische Übernahme wurde zusätzlich im sichtbaren Windows-Fenster
+  bedient; der ausgewählte Eintrag blieb in der heruntergescrollten Liste stehen.
+- Der öffentliche Release-Lauf für `v0.4.1` baut die Plattformpakete neu und
+  veröffentlicht erst nach erfolgreicher Prüfung der vollständigen Matrix.
+
 ## Bestätigt
 
 - Das öffentliche [v0.4.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0)

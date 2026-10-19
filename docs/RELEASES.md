@@ -41,8 +41,8 @@ Store-Zertifizierung und Veröffentlichung sind derzeit offen.
 
 Für sofortiges Testen unter Windows das portable ZIP vollständig entpacken und
 `PZServerArchitect.exe` starten. MSI und ZIP gehören zum
-[v0.4.0-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.0).
+[v0.4.1-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1).
 Für macOS bleiben Herausgebersignatur und Notarisierung offen.
 
-macOS-Paketmetadaten verwenden wegen der Apple-Versionsregel `1.4.0`;
-App-Version, Dateinamen und Release-Tag bleiben `0.4.0`.
+macOS-Paketmetadaten verwenden wegen der Apple-Versionsregel `1.4.1`;
+App-Version, Dateinamen und Release-Tag bleiben `0.4.1`.

@@ -10,7 +10,7 @@
 - Code-Signing und macOS-Notarisierung für direkte Verteilung vorbereiten.
 - Vollständige Installation und Updateübernahme auf allen Zielsystemen sowie Spieltest mit konkreter PZ-Version und Mods nachweisen.
 
-## [0.4.1] - 2026-10-19 · Preview
+## [0.4.1] - 2026-10-19 · öffentliches Preview-Release
 
 ### Korrigiert
 
@@ -25,6 +25,7 @@
 - 35 Prüfungen mit echten WPF-Controls und lokaler Java-Logik für automatische Übernahme, Scrollposition, Fokus, Undo/Redo, ungültige Eingaben und Navigation.
 - 55 Prüfungen der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen bestanden.
 - Die WPF-Prüfung ist Teil des Windows-Jobs in GitHub Actions; die Java-Oberfläche wird unter Linux geprüft.
+- Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061) bestand mit allen vier Plattformjobs und Veröffentlichung. Alle neun öffentlichen Paketprüfsummen wurden gegen die GitHub-Upload-Digests geprüft.
 
 ## [0.4.0] - 2026-10-16 · öffentliches Preview-Release
 

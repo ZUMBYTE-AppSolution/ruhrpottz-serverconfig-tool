@@ -54,7 +54,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-v0.4.1 behebt die manuelle Werteübernahme und das Zurückspringen der Einstellungsliste. Lokal bestehen 35 Prüfungen am WPF-Editor und 55 an der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen. Die [Releasekette](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/workflows/desktop-release.yml) baut alle Plattformpakete erneut und prüft ihre SHA-256-Dateien vor der Veröffentlichung. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+v0.4.1 behebt die manuelle Werteübernahme und das Zurückspringen der Einstellungsliste. 35 Prüfungen am WPF-Editor und 55 an der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen bestehen. Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061) bestand auf allen vier Plattformen und veröffentlichte [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Alle neun Paketprüfsummen stimmen mit den öffentlichen GitHub-Upload-Digests überein. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

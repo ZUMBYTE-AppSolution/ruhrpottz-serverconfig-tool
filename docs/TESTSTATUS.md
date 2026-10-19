@@ -1,6 +1,6 @@
 # Prüfstatus
 
-## v0.4.1 · lokal bestätigt
+## v0.4.1 · bestätigt
 
 - 128 Updater- und 941 App-Prüfungen bestanden.
 - 35 Prüfungen am realen WPF-Editor mit lokalem Java-Kern bestanden: automatische
@@ -10,8 +10,13 @@
   und Scrollposition bei Bearbeitung und Rückgängig.
 - Die automatische Übernahme wurde zusätzlich im sichtbaren Windows-Fenster
   bedient; der ausgewählte Eintrag blieb in der heruntergescrollten Liste stehen.
-- Der öffentliche Release-Lauf für `v0.4.1` baut die Plattformpakete neu und
-  veröffentlicht erst nach erfolgreicher Prüfung der vollständigen Matrix.
+- Der [öffentliche Release-Lauf 39211135061](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061)
+  bestand mit allen vier Plattformjobs, den UI-Prüfungen und der vollständigen
+  Paketprüfung. [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1)
+  ist am 19. Oktober 2026 veröffentlicht worden.
+- Alle neun Pakete, neun SHA-256-Dateien, `SHA256SUMS.txt` und beide Windows-Aliase
+  sind öffentlich erreichbar. Paketprüfsummen und GitHub-Upload-Digests stimmen
+  überein; die Alias-Dateien stimmen mit den versionierten Windows-Dateien überein.
 
 ## Bestätigt
 

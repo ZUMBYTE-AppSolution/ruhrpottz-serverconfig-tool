@@ -58,9 +58,13 @@ internal static class Program
         Check(State().GetProperty("changed").GetInt32() == initialChanged, "opening an editor does not create a change");
         var original = Value("ini:PublicName");
         var input = Find<TextBox>("SettingValue");
-        input.Focus(); Keyboard.Focus(input);
+        input.Focus(); Keyboard.Focus(input); FocusManager.SetFocusedElement(window, input);
         var order = list.Items.Cast<ListBoxItem>().Select(Id).ToArray();
         var scroll = Descendants(list).OfType<ScrollViewer>().First();
+        await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+        window.UpdateLayout();
+        scroll.ScrollToVerticalOffset(Math.Min(20, scroll.ScrollableHeight));
+        await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
         double offset = scroll.VerticalOffset;
         Check(offset > 0, "test edits a setting after scrolling down the list");
         Check(!Descendants(window).OfType<Button>().Any(b => Equals(b.Content, "Übernehmen")), "no apply button in the value editor");
@@ -107,7 +111,7 @@ internal static class Program
         number.Text = "43";
         Invoke("Navigate", "export");
         Check(Value("ini:MaxPlayers") == "43", "navigation flushes the pending final keystroke");
-        Invoke("Navigate", "settings"); await Task.Delay(100);
+        Invoke("Navigate", "settings"); await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
         var restored = Find<ListBox>("SettingsList");
         var restoredScroll = Descendants(restored).OfType<ScrollViewer>().First();
         Check(Math.Abs(restoredScroll.VerticalOffset - offset) < .01, "returning to settings restores scroll position");
@@ -128,8 +132,9 @@ internal static class Program
     {
         var list = Find<ListBox>("SettingsList");
         var item = list.Items.Cast<ListBoxItem>().Single(i => Id(i) == id);
-        list.SelectedItem = item; list.ScrollIntoView(item); window.UpdateLayout();
-        await Task.Delay(60);
+        await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+        list.SelectedItem = item; window.UpdateLayout(); list.ScrollIntoView(item);
+        await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
     }
     private static string Id(ListBoxItem item) => (string)item.Tag.GetType().GetProperty("Id")!.GetValue(item.Tag)!;
     private static JsonElement State() => (JsonElement)typeof(MainWindow).GetField("state", PrivateInstance)!.GetValue(window)!;

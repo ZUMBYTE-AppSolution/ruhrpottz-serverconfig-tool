@@ -24,6 +24,12 @@ einem Commit von `main` startet dieselbe Matrix erneut. Erst wenn alle neun
 Pakete und ihre Prüfsummen vollständig und korrekt sind, entsteht ein
 öffentliches Preview-Release. Ein vorhandenes Release wird nicht überschrieben.
 
+Das zusätzliche Archiv eines privaten Testlaufs ist optional, wenn GitHub
+keinen Actions-Artefaktspeicher mehr zulässt; der Lauf weist dann ausdrücklich
+auf fehlende Downloads hin. Build-, UI- und Paketierungsschritte bleiben
+verpflichtend. Im öffentlichen Release sind Upload, vollständige Paketmatrix
+und Prüfsummenprüfung weiterhin verpflichtende Schritte.
+
 Die stabile Updateprüfung liest ausschließlich GitHub Releases. Sie ignoriert
 Preview-Releases und verwendet nur die passenden versionierten Installer.
 JARs und portable Archive sind keine automatischen Updateinstaller.

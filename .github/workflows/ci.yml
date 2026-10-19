@@ -61,7 +61,10 @@ jobs:
         run: |
           python -m pip install Pillow
           xvfb-run -a -s '-screen 0 1680x1100x24' python tools/native_smoke.py 'build/native/linux-x64/image/PZ Server Architect/bin/PZ Server Architect' build/screenshots/native-linux.png
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - name: Keep CI packages
+        id: ci_packages
+        continue-on-error: ${{ github.event.repository.private == true }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: desktop-${{ matrix.os }}
           path: |
@@ -72,3 +75,7 @@ jobs:
             build/screenshots/*.png
           if-no-files-found: error
           retention-days: 14
+      - name: Report unavailable private build archive
+        if: steps.ci_packages.outcome == 'failure' && github.event.repository.private == true
+        shell: bash
+        run: echo '::warning::Private build archive unavailable. Compilation, UI tests and packaging passed; public release jobs still require complete uploaded packages.'

@@ -179,9 +179,11 @@ der App. Die konkreten Pakettypen sind MSI unter Windows, DMG unter macOS und DE
 unter Linux. Andere Linux-Paketmanager sind damit nicht automatisch abgedeckt.
 
 Ein ZIP/JAR der Preview ist kein automatisches App-Update. Ein Release muss erst
-vollständig gebaut, hochgeladen und als stabil veröffentlicht sein, damit es
-angeboten wird. v0.4.1 ist ein Preview-Release und wird deshalb manuell über
-GitHub heruntergeladen. Der Editor arbeitet auch ohne Netzwerk. In der
+vollständig gebaut, hochgeladen und als reguläres GitHub-Release veröffentlicht sein, damit es
+angeboten wird. v0.4.1 wird als reguläres GitHub-Release angeboten und ist unter
+„Hilfe & Updates → Jetzt prüfen“ verfügbar. Seine anfänglich falsche
+Vorabversionskennzeichnung wurde korrigiert. Der Editor arbeitet auch ohne
+Netzwerk. In der
 Desktop-Ausgabe unterbindet `--offline` in Testläufen Update- und Serverabfragen;
 bewusst geöffnete Browserlinks bleiben eigene Aktionen.
 

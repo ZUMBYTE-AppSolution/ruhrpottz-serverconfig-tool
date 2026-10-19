@@ -13,7 +13,7 @@
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-lesen-6d28d9"></a>
 </p>
 
-> **v0.4.1 Preview:** Native WPF-Oberfläche für Windows x64; macOS Intel/Apple Silicon und Linux x64 verwenden die Java-Oberfläche. Die App arbeitet lokal und verändert keinen laufenden Server.
+> **v0.4.1:** Native WPF-Oberfläche für Windows x64; macOS Intel/Apple Silicon und Linux x64 verwenden die Java-Oberfläche. Die App arbeitet lokal und verändert keinen laufenden Server.
 
 ![Native Windows-Übersicht in v0.4.1](docs/images/wpf-overview.png)
 
@@ -35,12 +35,15 @@ Es gibt keinen Masterserver, keine Telemetrie und keinen Upload deiner Serverkon
 
 ## Installation
 
-1. Lade das passende Paket von [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
+1. Lade das passende Paket von [v0.4.1](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Windows bietet MSI und ein portables ZIP, macOS je ein DMG für Intel und Apple Silicon, Linux ein DEB und ein portables TAR.GZ.
 2. Bei einem portablen Paket: **vollständig entpacken**, dann den enthaltenen App-Starter öffnen. Unter Windows heißt er `PZServerArchitect.exe`. Die benötigten Laufzeiten sind enthalten.
 3. Importiere dein zusammengehöriges `.ini`- und `_SandboxVars.lua`-Dateipaar oder beginne mit Quick Start.
 4. Prüfe die Änderungen und exportiere ein neues ZIP. Übernimm es erst nach einem Backup und einem Test mit deinem Spielbuild und deinen Mods.
 
 Das zusätzliche MSIX-Testpaket ist **nicht signiert** und verwendet eine Entwicklungsidentität. Für eine Store-Abgabe fehlen noch die Reservierung und Paketidentität aus Microsoft Partner Center. Zum direkten Ausprobieren unter Windows das portable ZIP verwenden. [MSIX-Stand](docs/RELEASES.md)
+
+Bereits installierte Versionen finden v0.4.1 unter **Hilfe & Updates → Jetzt prüfen**.
+Die anfänglich falsche Kennzeichnung als GitHub-Vorabversion wurde korrigiert.
 
 ![Native Windows-Einstellungen mit Themenauswahl und Suche](docs/images/wpf-settings.png)
 
@@ -54,7 +57,7 @@ Der Katalog hilft bei der Bedienung, ersetzt aber keinen Test mit deiner konkret
 
 ## Entwicklungsstand
 
-v0.4.1 behebt die manuelle Werteübernahme und das Zurückspringen der Einstellungsliste. 35 Prüfungen am WPF-Editor und 55 an der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen bestehen. Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061) bestand auf allen vier Plattformen und veröffentlichte [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Alle neun Paketprüfsummen stimmen mit den öffentlichen GitHub-Upload-Digests überein. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
+v0.4.1 behebt die manuelle Werteübernahme und das Zurückspringen der Einstellungsliste. 35 Prüfungen am WPF-Editor und 55 an der Java-Oberfläche sowie 128 Updater- und 941 App-Prüfungen bestehen. Der [öffentliche Release-Lauf](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061) bestand auf allen vier Plattformen und veröffentlichte [v0.4.1](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1). Alle neun Paketprüfsummen stimmen mit den öffentlichen GitHub-Upload-Digests überein. Bestätigte Ergebnisse und offene Punkte stehen in [Prüfstatus](docs/TESTSTATUS.md) und [Changelog](CHANGELOG.md).
 
 Für Entwicklung werden JDK 21 und Python 3 benötigt:
 

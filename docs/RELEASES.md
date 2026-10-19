@@ -22,7 +22,9 @@ führen die Offline-Prüfungen aus. Linux prüft zusätzlich die echte Oberfläc
 und den gebündelten Launcher unter Xvfb. Ein versionierter Tag `vX.Y.Z` auf
 einem Commit von `main` startet dieselbe Matrix erneut. Erst wenn alle neun
 Pakete und ihre Prüfsummen vollständig und korrekt sind, entsteht ein
-öffentliches Preview-Release. Ein vorhandenes Release wird nicht überschrieben.
+öffentliches reguläres Release für den App-Updater. Der Workflow setzt es als
+neueste Version und prüft anschließend, dass es weder Entwurf noch Vorabversion
+ist. Ein vorhandenes Release wird nicht überschrieben.
 
 Das zusätzliche Archiv eines privaten Testlaufs ist optional, wenn GitHub
 keinen Actions-Artefaktspeicher mehr zulässt; der Lauf weist dann ausdrücklich
@@ -30,9 +32,15 @@ auf fehlende Downloads hin. Build-, UI- und Paketierungsschritte bleiben
 verpflichtend. Im öffentlichen Release sind Upload, vollständige Paketmatrix
 und Prüfsummenprüfung weiterhin verpflichtende Schritte.
 
-Die stabile Updateprüfung liest ausschließlich GitHub Releases. Sie ignoriert
-Preview-Releases und verwendet nur die passenden versionierten Installer.
-JARs und portable Archive sind keine automatischen Updateinstaller.
+Die Updateprüfung liest ausschließlich GitHub Releases. Sie ignoriert Entwürfe
+und als Vorabversion markierte Releases und verwendet nur die passenden
+versionierten Installer. Deshalb werden vollständige nummerierte App-Releases
+als reguläre GitHub-Releases veröffentlicht. v0.4.1 war zunächst versehentlich
+als Vorabversion markiert; diese Kennzeichnung wurde am 19. Oktober korrigiert,
+damit bereits installierte Versionen das Update finden. Dafür ist keine neue
+App-Installation nötig. JARs und portable Archive sind keine automatischen
+Updateinstaller. Signierung, Store-Freigabe und die unten genannten Prüfgrenzen
+bleiben gesonderte Aufgaben.
 
 ## Windows MSIX
 
@@ -47,7 +55,7 @@ Store-Zertifizierung und Veröffentlichung sind derzeit offen.
 
 Für sofortiges Testen unter Windows das portable ZIP vollständig entpacken und
 `PZServerArchitect.exe` starten. MSI und ZIP gehören zum
-[v0.4.1-Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1).
+[v0.4.1](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1).
 Für macOS bleiben Herausgebersignatur und Notarisierung offen.
 
 macOS-Paketmetadaten verwenden wegen der Apple-Versionsregel `1.4.1`;

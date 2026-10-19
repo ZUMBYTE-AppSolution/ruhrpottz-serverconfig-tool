@@ -1,4 +1,4 @@
-# PZ Server Architect 0.4.1 Preview
+# PZ Server Architect 0.4.1
 
 Dieses Update behebt die Werteübernahme und das Zurückspringen der Einstellungsliste.
 Auswahlfelder werden sofort übernommen; Text-, Zahlen- und Kennwortfelder nach
@@ -17,6 +17,12 @@ Spieler, Karte, Version und Mods; er wird alle 15 Sekunden aktualisiert.
 Ein eigener Discord-Button öffnet die Community-Einladung.
 
 ## Downloads
+
+**Update von 0.4.0:** Unter „Hilfe & Updates“ auf „Jetzt prüfen“ und danach
+„Paket laden“ klicken. v0.4.1 war zunächst fälschlich als GitHub-Vorabversion
+markiert und wurde dadurch vom Updater ignoriert. Die Kennzeichnung ist
+korrigiert; die vorhandenen Pakete sind unverändert. Die App kann intern
+weiterhin „Preview“ anzeigen. Das beschreibt ihren Entwicklungsstand.
 
 | Plattform | Pakete |
 |---|---|
@@ -45,7 +51,7 @@ systemweite Installerinstallationen, ein vollständiger Updatezyklus und
 Spieltests mit konkreten PZ-Versionen, AMP und Mods stehen noch aus.
 
 Profile und Konfigurationen bleiben lokal. Es gibt keinen Masterserver und
-keinen Konfigurations-Upload. Vorabversionen werden vom stabilen Auto-Updater
-nicht automatisch installiert.
+keinen Konfigurations-Upload. Entwürfe und ausdrücklich als GitHub-Vorabversion
+markierte Releases werden vom Updater nicht angeboten.
 
 Weitere Änderungen: [Changelog](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/blob/v0.4.1/CHANGELOG.md).

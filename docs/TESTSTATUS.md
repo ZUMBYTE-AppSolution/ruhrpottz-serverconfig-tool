@@ -12,11 +12,18 @@
   bedient; der ausgewählte Eintrag blieb in der heruntergescrollten Liste stehen.
 - Der [öffentliche Release-Lauf 39211135061](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/actions/runs/39211135061)
   bestand mit allen vier Plattformjobs, den UI-Prüfungen und der vollständigen
-  Paketprüfung. [v0.4.1 Preview](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1)
+  Paketprüfung. [v0.4.1](https://github.com/ZUMBYTE-AppSolution/ruhrpottz-serverconfig-tool/releases/tag/v0.4.1)
   ist am 19. Oktober 2026 veröffentlicht worden.
 - Alle neun Pakete, neun SHA-256-Dateien, `SHA256SUMS.txt` und beide Windows-Aliase
   sind öffentlich erreichbar. Paketprüfsummen und GitHub-Upload-Digests stimmen
   überein; die Alias-Dateien stimmen mit den versionierten Windows-Dateien überein.
+- Die anfängliche GitHub-Vorabversionsmarkierung wurde korrigiert. Der öffentliche
+  Endpunkt für das neueste reguläre Release liefert v0.4.1. Mit dem unveränderten
+  Updater der installierten Windows-Version 0.4.0 wurden Updateerkennung, Download
+  des v0.4.1-MSI und SHA-256-Prüfung bestätigt. Die Prüfung mit Versionsstand
+  0.4.1 meldet erwartungsgemäß kein neueres Update. Es wurde kein Installer gestartet.
+- Die Releasekette veröffentlicht nummerierte Versionen regulär und prüft nach
+  der Veröffentlichung, dass das Release weder Entwurf noch Vorabversion ist.
 
 ## Bestätigt
 

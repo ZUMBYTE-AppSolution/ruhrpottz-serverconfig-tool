@@ -10,10 +10,11 @@
 - Code-Signing und macOS-Notarisierung für direkte Verteilung vorbereiten.
 - Vollständige Installation und Updateübernahme auf allen Zielsystemen sowie Spieltest mit konkreter PZ-Version und Mods nachweisen.
 
-## [0.4.1] - 2026-10-19 · öffentliches Preview-Release
+## [0.4.1] - 2026-10-19 · öffentliches Release
 
 ### Korrigiert
 
+- GitHub-Releasekennzeichnung berichtigt: v0.4.1 wird bestehenden Installationen als Update angeboten. Die Releasekette veröffentlicht nummerierte Versionen regulär und prüft die Updatefreigabe nach der Veröffentlichung.
 - Werte werden im Editor automatisch übernommen: Auswahlfelder direkt, Text-, Zahlen- und Kennwortfelder nach 350 Millisekunden Eingabepause. Der zusätzliche Übernehmen-Button entfällt auf Windows, macOS und Linux.
 - WPF schreibt Änderungen im Hintergrund und aktualisiert bestehende Zeilen. Listenposition, Reihenfolge, Auswahl, Eingabefokus und Cursor bleiben erhalten.
 - Rückgängig, Wiederholen, Originalwert und Schlüsselentfernung behalten die Liste an ihrer Position; beim Zurückkehren zur Einstellungsseite stellt WPF Auswahl und Scrollposition wieder her.
